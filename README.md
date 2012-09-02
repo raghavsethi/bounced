@@ -46,13 +46,13 @@ Don't think this is worth the time and complexity
 SQLite or XML. Probably secured or encrypted in some way
 
 ###Distribution of network-specific configuration
-####Complex way
+#####Complex way
 Run a common server that distributes list of IP addresses of server/failover server. Only makes sense if a concept of failover, load-sharing server exists. Then distribute the common-name of the server.
 
-####Easy way
+#####Easy way
 Distribute a configuration file along with the installer, again, probably only makes sense if multiple servers exist
 
-####Ridiculously easy way
+#####Ridiculously easy way
 Hardcode the common server into the distributable
 
 ###Failover/Load sharing
