@@ -8,6 +8,10 @@ Development Environment
 1. Notepad++ / VS2012
 2. GitHub for Windows
 3. Node.js
+4. MongoDB (because it has Windows support as well)
+###Packages for Node
+1. Express (tutorial: http://dailyjs.com/2010/11/08/node-tutorial-2/)
+2. Node.js MongodB Driver (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/)
 
 Division of Labor
 -----------------
@@ -48,10 +52,8 @@ SQLite or XML. Probably secured or encrypted in some way
 ###Distribution of network-specific configuration
 #####Complex way
 Run a common server that distributes list of IP addresses of server/failover server. Only makes sense if a concept of failover, load-sharing server exists. Then distribute the common-name of the server.
-
 #####Easy way
 Distribute a configuration file along with the installer, again, probably only makes sense if multiple servers exist
-
 #####Ridiculously easy way
 Hardcode the common server into the distributable
 

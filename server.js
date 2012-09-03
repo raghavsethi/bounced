@@ -1,28 +1,13 @@
-var http = require("http");
-var url = require("url");
+var express = require('express');
+var app = express();
 
-function start(route, handle) {
-  function onRequest(request, response) {
-    var postData = "";
-    var pathname = url.parse(request.url).pathname;
-    console.log("Request for " + pathname + " received.");
+var register = require('./register');
 
-    request.setEncoding("utf8");
+app.get('/', function(req, res){
+  res.send('Hello World');
+});
 
-    request.addListener("data", function(postDataChunk) {
-      postData += postDataChunk;
-      console.log("Received POST data chunk '"+
-      postDataChunk + "'.");
-    });
+app.get('/register', register.register);
 
-    request.addListener("end", function() {
-      route(handle, pathname, response, postData);
-    });
-
-  }
-
-  http.createServer(onRequest).listen(8888);
-  console.log("Server has started.");
-}
-
-exports.start = start;
+app.listen(3000);
+console.log('Listening on port 3000');
