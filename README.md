@@ -9,7 +9,8 @@ Development Environment
 2. GitHub for Windows
 3. Node.js
 4. MongoDB (because it has Windows support as well)
-###Packages for Node
+
+Packages for Node:
 1. Express (tutorial: http://dailyjs.com/2010/11/08/node-tutorial-2/)
 2. Node.js MongodB Driver (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/)
 
@@ -26,16 +27,16 @@ Major requirements: Anonymity for users, should ideally not be identifiable by I
 Nicknames wouldn't work as primary keys, because you should be able to change nicks as often as you like. Initial thoughts are using a hash of (one or more) MAC address, or maybe just a mac address.
 
 ###Server-initiated transfers, peer-initiated transfers
-Possibly long-polling the server. Or we could have the client listen on a port. Listening on a port is probably a better option, because that will reduce latency and server-load for peer-initiated transfers
+Client will listen on a port.
 
 ###Network protocol
-Definitely TCP, and leaning towards HTTP, as that is well-supported by Node and is easily debuggable in the browser and via Fiddler
+HTTP, as that is well-supported by Node and is easily debuggable in the browser and via Fiddler
 
 ###Data transfer
 JSON, no questions asked
 
 ###Encryption over the wire
-To prevent MITM and attempt to protect IP addresses of nicks from being revealed, HTTPS may be the way to go. We will have to see how to obtain a HTTPS certificate
+To prevent MITM and attempt to protect IP addresses of nicks from being revealed, HTTPS may be the way to go. We will have to see how to obtain a HTTPS certificate.
 
 ###Encryption on disk for friend-files
 Could use the hash of the file as the encryption key, this would make life very easy as the requesting peer only needs to know the hash - which is anyway the primary key for a file. However, it remains to be seen how the client which has the file will know which file to send.
@@ -44,7 +45,7 @@ Could use the hash of the file as the encryption key, this would make life very 
 Doesn't seem to be possible, as it would technically be possible for the user to download other files off the network and see if the hashes match. This may be time-consuming and irrationally expensive, as the client will not tell you the hash in the UI, you will have to packet-sniff (which is not possible if we use HTTPS) or read the applications local storage. Of course, the applications local storage can be encrypted to prevnt this from happening
 
 ###Encryption for standard transfers
-Don't think this is worth the time and complexity
+Don't think this is worth the time and complexity, MITM can simply be prevented by using the comparing against the expected hash
 
 ###Local storage
 SQLite or XML. Probably secured or encrypted in some way
@@ -58,7 +59,7 @@ Distribute a configuration file along with the installer, again, probably only m
 Hardcode the common server into the distributable
 
 ###Failover/Load sharing
-Possibly can be left for later
+Will be implemented later.
 
 ###Update mechanism
 It is imperative that we find a way to update the client with minimum fuss. This is especially important as the client is likely to suffer from security issues, which may need to patched on a priority basis.
