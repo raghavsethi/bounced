@@ -8,11 +8,11 @@ Development Environment
 1. Notepad++ / VS2012
 2. GitHub for Windows
 3. Node.js
-4. MongoDB (because it has Windows support as well)
+4. MongoDB (because it has Windows support as well) (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/)
 
 Packages for Node:
 1. Express (tutorial: http://dailyjs.com/2010/11/08/node-tutorial-2/)
-2. Node.js MongodB Driver (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/)
+2. Mongoose (for MongoDB) (http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/)
 
 Division of Labor
 -----------------
