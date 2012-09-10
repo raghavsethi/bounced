@@ -8,7 +8,8 @@ Development Environment
 1. Notepad++ / VS2012
 2. GitHub for Windows
 3. Node.js
-4. MongoDB (because it has Windows support as well) (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/)
+4. MongoDB (because it has Windows support as well) (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) (reading about mongo: http://docs.mongodb.org/manual/)
+5. To test the API : https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm
 
 Packages for Node:
 1. Express (tutorial: http://dailyjs.com/2010/11/08/node-tutorial-2/)
