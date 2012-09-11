@@ -31,14 +31,12 @@ User = models.User;
 // Request handlers
 
 app.get('/online', function (req, res) {
-	onlineUsersHandler(req, res);
+	require('./userhandlers').onlineUsersHandler(req, res);
 });
 
-// Handler definitions
+app.post('/register', function (req, res) {
+	require('./userhandlers').registerUserHandler(req, res);
+});
 
-var onlineUsersHandler = function (req, res) {
-	User.find({}, function(error, users) { 
-		res.send(users);
-	});
-}
+
 

@@ -23,6 +23,10 @@ Division of Labor
 
 Architecture Ideas
 ------------------
+
+###Keeping track of online users
+This is tricky - we can explore keep-alive, and check if it is supported by the client. Otherwise, server may have to ping online clients round-robin to check state or vice versa.
+
 ###Authentication
 Major requirements: Anonymity for users, should ideally not be identifiable by IP. However with a packet-sniffing tool, this would be almost impossible to do, unless the server is involved in all transfers.
 Nicknames wouldn't work as primary keys, because you should be able to change nicks as often as you like. Initial thoughts are using a hash of (one or more) MAC address, or maybe just a mac address.
