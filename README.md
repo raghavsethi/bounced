@@ -7,7 +7,7 @@ Development Environment
 -----------------------
 1. Microsoft WebMatrix (http://www.microsoft.com/Web/webmatrix/node.aspx)
 2. GitHub for Windows
-3. Node.js
+3. Node.js (install 32-bit node, that's the only one that works with WebMatrix)
 4. MongoDB (because it has Windows support as well) (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) (reading about mongo: http://docs.mongodb.org/manual/)
 5. To test the API : https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm
 
