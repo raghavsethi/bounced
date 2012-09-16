@@ -12,12 +12,12 @@ var Pending = new Schema({
 var UserSchema = new Schema({
     mac        	    : ObjectId
   , ip     	    : String
-  , nick      	        : String
-  , spaceAllocated      : Number
+  , nick      	    : String
+  , spaceAllocated  : Number
   , state 	    : Boolean
   , pending 	    : [Pending]
-  , dataUploaded 	: Number
-  , dataDownloaded 	: Number
+  , dataUploaded : Number
+  , dataDownloaded: Number
 });
 
 var FileSchema = new Schema({
