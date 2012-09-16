@@ -6,6 +6,7 @@ var Pending = new Schema({
     fileName  : String
   , Uploader  : String
   , hash      : String
+  , transferID: Number
 });
 
 var UserSchema = new Schema({
