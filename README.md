@@ -5,7 +5,8 @@ Server for the Bounce file-sharing network
 
 Development Environment
 -----------------------
-1. Microsoft WebMatrix (http://www.microsoft.com/Web/webmatrix/node.aspx)
+1. NOT Microsoft WebMatrix (http://www.microsoft.com/Web/webmatrix/node.aspx) (buggy)
+--> we will use Notepad++ for the time being
 2. GitHub for Windows
 3. Node.js (install 32-bit node, that's the only one that works with WebMatrix)
 4. MongoDB (because it has Windows support as well) (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) (reading about mongo: http://docs.mongodb.org/manual/)
