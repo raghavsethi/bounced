@@ -3,10 +3,11 @@ mongoose.connect('mongodb://localhost/test');
 var Schema = mongoose.Schema;
 
 var Pending = new Schema({
-    fileName  : String
-  , Uploader  : String
-  , hash      : String
-  , transferID: Number
+    fileName    : String
+  , Uploader    : String
+  , hash        : String
+  , transferID  : Number
+  , symKey      : String
 });
 
 var UserSchema = new Schema({
