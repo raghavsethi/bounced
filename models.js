@@ -1,10 +1,11 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test');
 var Schema = mongoose.Schema;
 
-var Pending = new Schema({
+mongoose.connect('mongodb://localhost/test');
+
+var PendingSchema = new Schema({
     fileName    : String
-  , Uploader    : String
+  , uploader    : String
   , hash        : String
   , transferID  : Number
   , symKey      : String
@@ -21,7 +22,7 @@ var UserSchema = new Schema({
   , dataDownloaded 	: Number
 });
 
-var Files = new Schema({
+var FileSchema = new Schema({
     hash	: ObjectId
   , name    : String
   , size    : String
@@ -33,6 +34,8 @@ var Files = new Schema({
 
 var User = mongoose.model('User', UserSchema);
 var File = mongoose.model('File', FileSchema);
+var Pending = mongoose.model('Pending', PendingSchema);
 
 exports.User = User;
 exports.File = File;
+exports.Pending = Pending;

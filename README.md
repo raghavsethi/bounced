@@ -18,9 +18,9 @@ Packages for Node:
 
 Division of Labor
 -----------------
-1. Authentication and architecture (Raghav)
-2. Indexing and sync (Naved)
-3. Other database operations, encryption (Mayank)
+1. Architecture (Raghav)
+2. Database operations and caching (Naved)
+3. Client (Mayank)
 
 Architecture Ideas
 ------------------
