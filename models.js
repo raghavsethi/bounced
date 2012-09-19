@@ -9,6 +9,7 @@ var PendingSchema = new Schema({
   , hash        : String
   , transferID  : Number
   , symKey      : String
+  , online      : Boolean
 });
 
 var UserSchema = new Schema({
