@@ -3,17 +3,26 @@ var Schema = mongoose.Schema;
 
 mongoose.connect('mongodb://localhost/test');
 
+/* Pending 'type' values
+   ---------------------
+
+   'direct'     (from person with the file to the person who wants the file)
+   'indirect'   (from person with the file to a friend of the requestor)
+   'bounce'     (from a friend who has the file to the person who wanted the file)
+   'delete'     (instruction to delete a file being held for a friend)
+*/
+
 var PendingSchema = new Schema({
     fileName    : String
   , uploader    : String
   , hash        : String
   , transferID  : Number
   , symKey      : String
-  , online      : Boolean
+  , type        : String
 });
 
 var UserSchema = new Schema({
-    mac             : ObjectId
+    mac             : Schema.Types.ObjectId
   , ip     			: String
   , nick      		: String
   , spaceAllocated 	: Number
@@ -24,13 +33,19 @@ var UserSchema = new Schema({
 });
 
 var FileSchema = new Schema({
-    hash	: ObjectId
+    hash    : Schema.Types.ObjectId
   , name    : String
   , size    : String
-  , users 	: [Users]
+  , users 	: [User]
   , meta    : {
       keyword : String
   }
+});
+
+var FriendSchema = new Schema({
+    friend1 : String
+  , friend2 : String
+  , count   : Number
 });
 
 var User = mongoose.model('User', UserSchema);

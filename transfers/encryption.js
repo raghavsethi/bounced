@@ -7,7 +7,7 @@ function generateNewKey() {
     return x*x;
 }
 
-// Will fail if we can handle multiple transfers in under a millisecond.
+// Will fail if we handle multiple transfers in under a millisecond.
 function generateNewId() {
     x = Date.now();
     return x;

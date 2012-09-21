@@ -1,7 +1,5 @@
 
 var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
   , models = require('./models');
@@ -37,5 +35,11 @@ app.post('/register', function (req, res) {
 	require('./userhandlers').registerUserHandler(req, res);
 });
 
+app.get('/pending',  function (req, res) {
+    require('./users/pending').pendingHandler(req, res);
+});
 
+app.post('/download', function (req, res) {
+    require('./transfers/download').downloadHandler(req, res);
+});
 
