@@ -9,7 +9,7 @@ function onlineUsersHandler(req, res) {
 function registerUserHandler(req, res) {
 		
 	User.find({'mac' :  req.body.mac}, function(error, users) {
-	    console.log(error);
+
 	    if (users == undefined)
 		{
 			console.log('New user arrived');

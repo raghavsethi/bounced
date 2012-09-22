@@ -28,7 +28,7 @@ var UserSchema = new Schema({
   , ip     			: String
   , nick      		: String
   , spaceAllocated 	: Number
-  , state 			: Boolean
+  , online 			: Boolean
   , pending  		: [Pending]
   , dataUploaded 	: Number
   , dataDownloaded  : Number

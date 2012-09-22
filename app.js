@@ -32,7 +32,7 @@ app.get('/online', function (req, res) {
 });
 
 app.post('/register', function (req, res) {
-	require('./userhandlers').registerUserHandler(req, res);
+	require('./users/register').registerUserHandler(req, res);
 });
 
 app.get('/pending',  function (req, res) {

@@ -46,11 +46,12 @@ function downloadHandler(req, res) {
         }
         
         Pending.find({ 'mac': newPending.mac, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, users) {
-
-            newPending.save();
-
-            res.send({ 'status': 'OK', 'text': 'Download request accepted' })
-
+            if (error == null) {
+                if (users.length == 0) {
+                    newPending.save();
+                    res.send({ 'status': 'OK', 'text': 'Download request accepted' })
+                }
+            }
         });
 
     });
