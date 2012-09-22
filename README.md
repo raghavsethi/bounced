@@ -92,6 +92,12 @@ Requests and responses
 **Client Action** When a client recieves a request to serve a file
 **Server Action** Return the key for a transferID
 
+###GET /status
+**Request Body** None  
+**Response Body** {'transferId':XYZ, 'hash':XYZ, 'mac': XYZ, 'sent': 2, 'total': 5} 
+**Client Action** When the pending tab is selected
+**Server Action** Compute which transferIDs have what status
+
 ###POST /register
 **Request Body** mac=XYZ, nick=XYZ, space_allocated=265348  
 **Response Body** {'status': 'OK', 'text':'xyz'}  
@@ -123,3 +129,30 @@ Simple download protocol
 1. User selects a file and selects 'download'
 2. Client makes request to /download with mac, hash, type
 3. If the file is 'online', the server creates 1 entry in the pending table from uploader to downloader. Otherwise, it will also create 'x' entries for the user's friends to download the file.
+
+Use cases
+---------
+1. User downloads file directly, file remains online throughout
+2. User requests offline file, file is replicated, downloaded from original holder
+3. User requests offline file, file is replicated, downloaded from friend
+4. Node is instructed to download file for friend
+5. Node is instructed to download file for itself
+6. User changes nick - only on next restart
+7. Sync is initiated - only on explicit call
+8. User becomes offline
+9. Transfer is completed
+10. Transfer failed
+11. Friend loses file it has downloaded
+12. User receives file, and other nodes are still holding file for user
+13. User never comes online to receive the file
+14. Transfer is restarted at a given point
+15. Original holder loses/deletes file
+16. Transfer is corrupted (direct)
+17. Server is down
+18. Unable to conect to TCP node
+19. Convert a failed direct to an indirect transfer
+20. Server does not realise that a user has recieved the file (satus should last b/w app restarts)
+21. Duplicate nicks selected - reject register request
+22. Hard drive space less-remove pendings.
+23. Requester recieves file while it is being replicated to other nodes as well
+24. Tranfer is corrupted for a bounced file - delete the file at the replicated node
