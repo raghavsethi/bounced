@@ -11,8 +11,8 @@ function downloadHandler(req, res) {
     
     User = require('../models').User;
 
-    User.find({'ip' : ip}, function(error, users) {
-    
+    User.find({ 'ip': ip }, function (error, users) {
+
         // Error checking
         //TODO: Check for error and multiple users for a single IP.
 
@@ -23,7 +23,7 @@ function downloadHandler(req, res) {
         newPending.fileHash = requestFileHash;
         newPending.filename = requestFileName;
         newPending.uploader = requestMac;
-        newPending.downloader = 
+        newPending.downloader =
         newPending.transferID = encryption.generateNewId();
         newPending.symKey = encryption.generateNewKey();
 
@@ -35,7 +35,7 @@ function downloadHandler(req, res) {
             newPending.online = true;
             newPending.type = "direct";
         }
-            // Offline
+        // Offline
         else {
             newPending.online = false;
             newPending.type = "firstleg";
@@ -44,14 +44,16 @@ function downloadHandler(req, res) {
 
             //TODO: Complete this method.
         }
+        
+        Pending.find({ 'mac': newPending.mac, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, users) {
 
-        Pending.find({'mac' : newPending.mac, 'uploader': newPending.uploader, 'type' : newPending.type});
+            newPending.save();
 
-        newPending.save();
+            res.send({ 'status': 'OK', 'text': 'Download request accepted' })
 
-        res.send({ 'status': 'OK', 'text' : 'Download request accepted' })
+        });
 
-    }
+    });
 
 }
 

@@ -24,7 +24,7 @@ var PendingSchema = new Schema({
 });
 
 var UserSchema = new Schema({
-    mac             : Schema.Types.ObjectId
+    mac             : String
   , ip     			: String
   , nick      		: String
   , spaceAllocated 	: Number
@@ -32,23 +32,31 @@ var UserSchema = new Schema({
   , pending  		: [Pending]
   , dataUploaded 	: Number
   , dataDownloaded  : Number
-  , friends         : []
 });
 
 var FileSchema = new Schema({
-    hash    : Schema.Types.ObjectId
+    hash    : String
   , name    : String
-  , size    : String
-  , users 	: [User]
+  , size    : Number
+  , users 	: [String]
   , meta    : {
       keyword : String
   }
 });
 
+var FriendshipSchema = new Schema({
+    friend1: String
+  , friend2: String
+  , size: Number
+});
+
+
 var User = mongoose.model('User', UserSchema);
 var File = mongoose.model('File', FileSchema);
 var Pending = mongoose.model('Pending', PendingSchema);
+var Friendship = mongoose.model('Friendship', FriendshipSchema);
 
 exports.User = User;
 exports.File = File;
 exports.Pending = Pending;
+exports.Friendship = Friendship;
