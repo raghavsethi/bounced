@@ -72,16 +72,54 @@ It is imperative that we find a way to update the client with minimum fuss. This
 Again, an easy way to do this is to force the user to update to the latest version (simply by providing a link) and exiting the application if it is not on the latest version.
 
 Requests and responses
-======================
+----------------------
 
-##GET /pending
-*Request Body* None
-*Response Body* [{'uploader':XYZ, 'type':'indirect'...},]
-*Client Action* Repeated every 'x' seconds
-*Server Action* Reset the timeout at which the server will mark the user offline
+###GET /pending
+**Request Body** None  
+**Response Body** [{'uploader':XYZ, 'type':'indirect'...},]  
+**Client Action** Repeated every 'x' seconds  
+**Server Action** Reset the timeout at which the server will mark the user offline  
 
-##POST /register
-*Request Body* mac=XYZ, nick=XYZ, space_allocated=265348
-*Response Body* {'status': 'OK', 'text':'xyz'}
-*Client Action* Application start
-*Server Action* Mark user as online and start the timeout
+###GET /search/the+big+bang+theory
+**Request Body** None  
+**Response Body** [{'uploader':XYZ, 'mac':'XYZ', 'type':'online', 'hash':XYZ, 'size':1234, ...},]  
+**Client Action** When user searches for a file  
+**Server Action** Return list of matching files
+
+###GET /key/transferID
+**Request Body** None  
+**Response Body** {'key':XYZ} 
+**Client Action** When a client recieves a request to serve a file
+**Server Action** Return the key for a transferID
+
+###POST /register
+**Request Body** mac=XYZ, nick=XYZ, space_allocated=265348  
+**Response Body** {'status': 'OK', 'text':'xyz'}  
+**Client Action** Application start  
+**Server Action** Mark user as online and start the timeout  
+
+###POST /download
+**Request Body** hash=XYZ, mac=XYZ, type=online  
+**Response Body** {'status': 'OK', 'text':'xyz'}  
+**Client Action** User click on 'download' or 'bounce' button  
+**Server Action** Populate the pending queue appropriately  
+
+###POST /sync
+**Request Body** TBD  
+**Response Body** {'status': 'OK', 'text':'xyz'}  
+**Client Action** Client finishes calculating diffs  
+**Server Action** Make appropriate changes to file table  
+
+###POST /update
+**Request Body** transfer_id=XYZ, type=cancel/done, [newhash=XYZ]
+**Response Body** {'status': 'OK', 'text':'xyz'}  
+**Client Action** Client cancels or completes download
+**Server Action** Modify the pending queue appropriately  
+
+Simple download protocol
+------------------------
+
+###Client initiates download
+1. User selects a file and selects 'download'
+2. Client makes request to /download with mac, hash, type
+3. If the file is 'online', the server creates 1 entry in the pending table from uploader to downloader. Otherwise, it will also create 'x' entries for the user's friends to download the file.
