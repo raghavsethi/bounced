@@ -5,36 +5,53 @@ Pending = require('../models').Pending;
 function downloadHandler(req, res) {
 
     var requestMac = req.body.mac;
-    var requestHash = req.body.hash;
+    var requestFileHash = req.body.filehash;
     var requestFileName = req.body.filename;
     var requestType = req.body.type;
+    
+    User = require('../models').User;
 
-    var newPending = new Pending();
+    User.find({'ip' : ip}, function(error, users) {
+    
+        // Error checking
+        //TODO: Check for error and multiple users for a single IP.
 
-    newPending.filename = requestFileName;
-    newPending.uploader = requestMac;
-    newPending.transferID = encryption.generateNewId();
-    newPending.symKey = encryption.generateNewKey();
+        var requestDownloader = users[0].mac;
 
-    // Now behaviour will diverge depending on whether this is an online
-    // or offline transfer
+        var newPending = new Pending();
 
-    // Online
-    if (requestType.toLowerCase() === "online") {
-        newPending.online = true;
+        newPending.fileHash = requestFileHash;
+        newPending.filename = requestFileName;
+        newPending.uploader = requestMac;
+        newPending.downloader = 
+        newPending.transferID = encryption.generateNewId();
+        newPending.symKey = encryption.generateNewKey();
+
+        // Now behaviour will diverge depending on whether this is an online
+        // or offline transfer
+
+        // Online
+        if (requestType.toLowerCase() === "direct") {
+            newPending.online = true;
+            newPending.type = "direct";
+        }
+            // Offline
+        else {
+            newPending.online = false;
+            newPending.type = "firstleg";
+
+            // Add 'pending's for x friends
+
+            //TODO: Complete this method.
+        }
+
+        Pending.find({'mac' : newPending.mac, 'uploader': newPending.uploader, 'type' : newPending.type});
+
         newPending.save();
+
+        res.send({ 'status': 'OK', 'text' : 'Download request accepted' })
+
     }
-    // Offline
-    else {
-        newPending.online = false;
-        newPending.save();
-
-        // Add 'pending's for x friends
-
-        //TODO: Complete this method.
-    }
-
-    res.send({ 'status': 'Download request accepted' })
 
 }
 
