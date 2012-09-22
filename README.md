@@ -70,3 +70,18 @@ Will be implemented later.
 ###Update mechanism
 It is imperative that we find a way to update the client with minimum fuss. This is especially important as the client is likely to suffer from security issues, which may need to patched on a priority basis.
 Again, an easy way to do this is to force the user to update to the latest version (simply by providing a link) and exiting the application if it is not on the latest version.
+
+Requests and responses
+======================
+
+##GET /pending
+*Request Body* None
+*Response Body* [{'uploader':XYZ, 'type':'indirect'...},]
+*Client Action* Repeated every 'x' seconds
+*Server Action* Reset the timeout at which the server will mark the user offline
+
+##POST /register
+*Request Body* mac=XYZ, nick=XYZ, space_allocated=265348
+*Response Body* {'status': 'OK', 'text':'xyz'}
+*Client Action* Application start
+*Server Action* Mark user as online and start the timeout
