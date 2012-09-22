@@ -9,12 +9,13 @@ function onlineUsersHandler(req, res) {
 function registerUserHandler(req, res) {
 		
 	User.find({'mac' :  req.body.mac}, function(error, users) {
-		
-		if(users.length==0)
+	    console.log(error);
+	    if (users == undefined)
 		{
 			console.log('New user arrived');
 			newuser = new User();
 			newuser.mac = req.body.mac;
+			users = [];
 			users.push(newuser);
 		}
 
@@ -47,3 +48,6 @@ function registerUserHandler(req, res) {
 
 	});
 }
+
+exports.registerUserHandler = registerUserHandler;
+exports.onlineUsersHandler = onlineUsersHandler;
