@@ -51,6 +51,14 @@ function downloadHandler(req, res) {
                     newPending.save();
                     res.send({ 'status': 'OK', 'text': 'Download request accepted' })
                 }
+                else {
+                    res.send({ 'status': 'Error', 'text': 'This download request already exists' })
+                    return;
+                }
+            }
+            else {
+                res.send({ 'status': 'Error', 'text': error });
+                return;
             }
         });
 

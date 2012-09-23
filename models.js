@@ -29,7 +29,6 @@ var UserSchema = new Schema({
   , nick      		: String
   , spaceAllocated 	: Number
   , online 			: Boolean
-  , pending  		: [Pending]
   , dataUploaded 	: Number
   , dataDownloaded  : Number
 });
