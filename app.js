@@ -24,6 +24,7 @@ http.createServer(app).listen(app.get('port'), function(){
 // Initialize models
 
 User = models.User;
+Friendship = models.Friendship;
 
 // Request handlers
 

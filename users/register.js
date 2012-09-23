@@ -10,7 +10,7 @@
         if (users.length==0) {
             console.log('New user arrived');
             
-            newuser = new User();
+            var newuser = new User();
             newuser.mac = req.body.mac;
             newuser.dataDownloaded = 0;
             newuser.dataUploaded = 0;
@@ -31,18 +31,59 @@
         users[0].ip = req.ip;
         users[0].nick = req.body.nick;
         
-        users[0].save();
-        console.log('Saving user ' + users[0]);
+        var currentUser= users[0];
+        currentUser.save();
+        console.log('Saved user ' + currentUser);
 
-        // Updating friend relationships
-        User.find({ 'online': true }, function (error, onlineUsers) {
-            for (i = 0; i < onlineUsers.length; i++) {
-
-            }
-        });
+        // Updating friend relationships asynchronously
+        updateAllFriendships(currentUser);
 
         res.send({ 'status': 'OK', 'text': 'Logged in successfully' });
 
+    });
+}
+
+// Runs a loop through all online friends, calling updateFriendship on each
+function updateAllFriendships(currentUser) {
+    User.find({ 'online': true }, function (error, onlineUsers) {
+
+        for (i = 0; i < onlineUsers.length; i++) {
+
+            if (onlineUsers[i].mac === currentUser.mac)
+                continue;
+
+            updateFriendship(currentUser, onlineUsers[i]);
+        }
+    });
+}
+
+// Finds the friendship and increments count or creates a new friendship
+function updateFriendship(currentUser, currentOnlineUser) {
+
+    var queryParams = {
+        $or: [{ 'friend1': currentOnlineUser.mac, 'friend2': currentUser.mac },
+            { 'friend1': currentUser.mac, 'friend2': currentOnlineUser.mac }]
+    };
+
+    Friendship.find(queryParams, function (error, friends) {
+
+        currentOnlineUserMac = currentOnlineUser.mac;
+
+        // Create if relationship is not already present
+        if (friends.length == 0) {
+            //console.log("Creating new friendship between " + currentUser.mac + "and " + currentOnlineUserMac);
+            var newFriendship = new Friendship();
+            newFriendship.friend1 = currentUser.mac;
+            newFriendship.friend2 = currentOnlineUserMac;
+            newFriendship.count = 1;
+            newFriendship.save();
+        }
+        // Increment count if relationship is already present
+        else {
+            //console.log("Friendships found:" + friends.length);
+            friends[0].count = friends[0].count + 1;
+            friends[0].save();
+        }
     });
 }
 

@@ -46,7 +46,7 @@ var FileSchema = new Schema({
 var FriendshipSchema = new Schema({
     friend1: String
   , friend2: String
-  , size: Number
+  , count: Number
 });
 
 

@@ -16,6 +16,11 @@ Packages for Node:
 1. Express (tutorial: http://dailyjs.com/2010/11/08/node-tutorial-2/)
 2. Mongoose (for MongoDB) (http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/)
 
+Tutorials:
+1. Control flow: http://howtonode.org/control-flow
+2. Passing parameters to callbacks: http://stackoverflow.com/questions/939032/jquery-pass-more-parameters-into-callback
+3. Closures: http://web.archive.org/web/20080209105120/http://blog.morrisjohns.com/javascript_closures_for_dummies
+
 Division of Labor
 -----------------
 1. Architecture (Raghav)
