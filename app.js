@@ -21,6 +21,10 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
 
+// Initialize in-memory store of online users with timeouts
+//TODO: Make sure all users are marked 'offline' when the program begins.
+onlineUsers = {};
+
 // Initialize models
 
 User = models.User;
@@ -37,7 +41,7 @@ app.post('/register', function (req, res) {
 });
 
 app.get('/pending',  function (req, res) {
-    require('./users/pending').pendingHandler(req, res);
+    require('./users/pending').pendingHandler(req, res, onlineUsers);
 });
 
 app.post('/download', function (req, res) {

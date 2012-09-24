@@ -1,4 +1,6 @@
-﻿function registerUserHandler(req, res) {
+﻿var userTimeout = require('./timeout').userTimeout;
+
+function registerUserHandler(req, res) {
 
     User.find({ 'mac': req.body.mac }, function (error, users) {
 
@@ -37,6 +39,9 @@
 
         // Updating friend relationships asynchronously
         updateAllFriendships(currentUser);
+
+        //TODO: Think about what the timeout should be (this code also in 'pending')
+        onlineUsers[currentUser.mac] = setTimeout(userTimeout(currentUser.mac, onlineUsers), 1 * 60 * 1000);
 
         res.send({ 'status': 'OK', 'text': 'Logged in successfully' });
 

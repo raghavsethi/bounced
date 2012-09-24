@@ -80,7 +80,7 @@ Requests and responses
 ----------------------
 
 ###GET /pending
-**Request Body** None  
+**Request Body** mac:XYZ (new! - will significantly cut down on processing)  
 **Response Body** [{'uploader':XYZ, 'type':'indirect'...},]  
 **Client Action** Repeated every 'x' seconds  
 **Server Action** Reset the timeout at which the server will mark the user offline  
