@@ -44,6 +44,10 @@ app.get('/pending',  function (req, res) {
     require('./users/pending').pendingHandler(req, res, onlineUsers);
 });
 
+app.get('/search',  function (req, res) {
+    require('./users/search').searchHandler(req, res);
+});
+
 app.post('/download', function (req, res) {
     require('./transfers/download').downloadHandler(req, res);
 });
