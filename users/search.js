@@ -17,21 +17,21 @@ function searchHandler(req,res){
 			asyncFor(files.length, function(loop) {  
 				var i=loop.iteration();
 				userList=files[i].users;
-				var temp2=[];
-				
-				//temp.push(files[i].name);
-				//temp.push(files[i].hash);
-				User.find({'mac': {$in:userList}},{'ip':1,'nick':1},function (error,users) {					
+
+				User.find({'mac': {$in:userList}},{'mac':1,'nick':1,'online':1,},function (error,users) {					
 					asyncFor(users.length, function(loop2) {
 						var j = loop2.iteration();
-						//temp2.push(users[j].ip);
-						//temp2.push(users[j].nick);
-						temp2.push({'ip':users[j].ip,'nick':users[j].nick});
+						var type;
+						console.log(users[j].online);
+						if(users[j].online==true)
+							type='online';
+						else
+							type='offline';
+						var temp={'name':files[i].name, 'hash':files[i].hash, 'mac':users[j].mac, 'nick':users[j].nick, 'size':files[i].size, 'type': type};
+						result.push(temp);
 						loop2.next();
 						},
 						function(){
-						var temp={'name':files[i].name, 'hash':files[i].hash, 'users':temp2};
-						result.push(temp);
 						loop.next()
 						}								
 					);
