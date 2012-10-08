@@ -41,7 +41,7 @@ function registerUserHandler(req, res) {
         updateAllFriendships(currentUser);
 
         //TODO: Think about what the timeout should be (this code also in 'pending')
-        onlineUsers[currentUser.mac] = setTimeout(userTimeout(currentUser.mac, onlineUsers), 1 * 60 * 1000);
+        onlineUsers[currentUser.mac] = setTimeout(userTimeout(currentUser.mac, onlineUsers), 6 * 1000);
 
         res.send({ 'status': 'OK', 'text': 'Logged in successfully' });
 

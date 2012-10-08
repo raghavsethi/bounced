@@ -5,8 +5,7 @@ Server for the Bounce file-sharing network
 
 Development Environment
 -----------------------
-1. NOT Microsoft WebMatrix (http://www.microsoft.com/Web/webmatrix/node.aspx) (buggy)
---> we will use Notepad++ for the time being
+1. Microsoft WebMatrix (http://www.microsoft.com/Web/webmatrix/node.aspx) (now works)
 2. GitHub for Windows
 3. Node.js (install 32-bit node, that's the only one that works with WebMatrix)
 4. MongoDB (because it has Windows support as well) (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) (reading about mongo: http://docs.mongodb.org/manual/)
@@ -81,7 +80,7 @@ Requests and responses
 
 ###GET /pending
 **Request Body** mac:XYZ (new! - will significantly cut down on processing)  
-**Response Body** [{'uploader':XYZ, 'type':'indirect'...},]  
+**Response Body** [{'uploader':XYZ, 'type':'indirect'...},] (apart from everything in pending - this must return IP of uploader as well) 
 **Client Action** Repeated every 'x' seconds  
 **Server Action** Reset the timeout at which the server will mark the user offline  
 

@@ -20,7 +20,6 @@ var PendingSchema = new Schema({
   , fileName    : String
   , symKey      : String
   , type        : String
-  , online      : Boolean
 });
 
 var UserSchema = new Schema({
