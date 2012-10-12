@@ -23,7 +23,7 @@ http.createServer(app).listen(app.get('port'), function(){
 
 // Initialize in-memory store of online users with timeouts
 //TODO: Make sure all users are marked 'offline' when the program begins.
-onlineUsers = {};
+onlineUsers = {'test':'testTimeout'};
 
 // Initialize models
 
@@ -44,7 +44,7 @@ app.get('/pending',  function (req, res) {
     require('./users/pending').pendingHandler(req, res, onlineUsers);
 });
 
-app.get('/search',  function (req, res) {
+app.get('/search/:query',  function (req, res) {
     require('./users/search').searchHandler(req, res);
 });
 
@@ -52,3 +52,6 @@ app.post('/download', function (req, res) {
     require('./transfers/download').downloadHandler(req, res);
 });
 
+app.post('/sync', function (req, res) {
+    require('./users/sync').syncHandler(req, res);
+});

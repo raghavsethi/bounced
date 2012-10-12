@@ -13,11 +13,17 @@ function pendingHandler(req, res, onlineUsers) {
             return;
         }
 
-        clearTimeout(onlineUsers[users.mac]);
-        onlineUsers[users.mac] = setTimeout(userTimeout(users.mac, onlineUsers), 6 * 1000);
-        
+        console.log("pendingHandler onlineUsers:");
+        console.log(onlineUsers);
+
+        clearTimeout(onlineUsers[users[0].mac]);
+        onlineUsers[users[0].mac] = setTimeout(userTimeout(users.mac, onlineUsers), 6 * 1000);
+
+        console.log("pendingHandler2 onlineUsers:");
+        console.log(onlineUsers);
+
         var mac = users[0].mac;
-        console.log('Pendings requested by user with nick ' + users[0].nick);
+        console.log('Pendings requested by user ' + users[0].nick);
 
         Pending.find({ 'downloader': mac }, function (error, results) {
 
@@ -25,17 +31,24 @@ function pendingHandler(req, res, onlineUsers) {
             var users = [];
             var result = [];
             var onlineUsers = [0];
+            var onlineUserIPs = [0];
+
+            if (error)
+                console.log(error);
 
             if (results == undefined || results.length == 0) {
-                console.log('No pendings');
+                console.log('No pendings found');
                 res.send(pendings);
             }
             else {
 
                 for (i = 0; i < results.length; i++) {
-                    users.push(results[i].uploader);
-                    console.log(results[i].uploader);
+                    if (users.indexOf(results[i].uploader) == -1)
+                        users.push(results[i].uploader);
                 }
+
+                console.log("Users holding pending files:");
+                console.log(users);
 
                 User.find({ 'online': true, 'mac': { $in: users} }, function (error, online) {
 
@@ -44,17 +57,23 @@ function pendingHandler(req, res, onlineUsers) {
 
                     asyncFor(online.length, function (loop) {
                         onlineUsers.push(online[loop.iteration()].mac);
+                        onlineUserIPs.push(online[loop.iteration()].ip);
                         loop.next();
 
-                    },	function () {
-					    for (i = 0; i < results.length; i++) {
-					        if (checkIn(onlineUsers, results[i].uploader)) {
-					            pendings.push(results[i]);
-					        }
-					    }
-					    console.log('Pending ' + pendings);
-					    res.send(pendings);
-					}
+                    }, function () {
+                        for (i = 0; i < results.length; i++) {
+                            var index = onlineUsers.indexOf(results[i].uploader);
+                            if (index != -1) {
+                                //results[i]['uploaderIP'] = onlineUserIPs[index];
+                                results[i].uploaderIP = onlineUserIPs[index];
+                                pendings.push(results[i]);
+                            }
+                        }
+                        console.log('Pendings returned:');
+                        //pendings[0].uploaderIP = "127.0.0.1";
+                        console.log(pendings);
+                        res.send(pendings);
+                    }
 				);
 
 

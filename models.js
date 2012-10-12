@@ -18,8 +18,10 @@ var PendingSchema = new Schema({
   , downloader  : String
   , fileHash    : String
   , fileName    : String
+  , fileSize    : Number
   , symKey      : String
   , type        : String
+  , uploaderIP  : String
 });
 
 var UserSchema = new Schema({
@@ -36,10 +38,9 @@ var FileSchema = new Schema({
     hash    : String
   , name    : String
   , size    : Number
+  , type    : String
   , users 	: [String]
-  , meta    : {
-      keyword : String
-  }
+  , keywords: [String]
 });
 
 var FriendshipSchema = new Schema({

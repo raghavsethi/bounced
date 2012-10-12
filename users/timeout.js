@@ -3,6 +3,9 @@ function userTimeout(mac, onlineUsers) {
 
     return function () {
 
+        console.log("userTimeout onlineUsers:");
+        console.log(onlineUsers);
+
         User.findOne({ 'mac': mac }, function (error, user) {
             if (error)
                 console.log("userTimeout: " + error);
@@ -21,3 +24,4 @@ function userTimeout(mac, onlineUsers) {
 }
 
 exports.userTimeout = userTimeout;
+exports.onlineUsers = onlineUsers;

@@ -7,11 +7,12 @@ function downloadHandler(req, res) {
     var requestMac = req.body.mac;
     var requestFileHash = req.body.filehash;
     var requestFileName = req.body.filename;
+    var requestFileSize = req.body.filesize;
     var requestType = req.body.type;
     
     User = require('../models').User;
 
-    User.find({ 'ip': ip }, function (error, users) {
+    User.find({ 'ip': req.ip }, function (error, users) {
 
         // Error checking
         //TODO: Check for error and multiple users for a single IP.
@@ -21,11 +22,13 @@ function downloadHandler(req, res) {
         var newPending = new Pending();
 
         newPending.fileHash = requestFileHash;
-        newPending.filename = requestFileName;
+        newPending.fileName = requestFileName;
+        newPending.fileSize = requestFileSize;
         newPending.uploader = requestMac;
-        newPending.downloader =
+        newPending.downloader = requestDownloader;
         newPending.transferID = encryption.generateNewId();
         newPending.symKey = encryption.generateNewKey();
+        newPending.uploaderIP = "invalid";
 
         // Now behaviour will diverge depending on whether this is an online
         // or offline transfer
@@ -44,8 +47,8 @@ function downloadHandler(req, res) {
 
             //TODO: Complete this method.
         }
-        
-        Pending.find({ 'mac': newPending.mac, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, users) {
+
+        Pending.find({ 'fileHash': newPending.fileHash, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, users) {
             if (error == null) {
                 if (users.length == 0) {
                     newPending.save();

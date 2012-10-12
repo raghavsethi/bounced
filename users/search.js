@@ -2,11 +2,9 @@ var url = require("url");
 File=require('../models').File;
 
 function searchHandler(req,res){
-	var pathname = url.parse(req.url).query;
-	pathname = pathname.replace(/\+/g," ");
-	console.log("Request for " + pathname + " received.");
-	var search="/"+pathname+"/";
-	File.find({ 'name': pathname }, function (error, files) {
+	var pathname = req.params.query;
+
+	File.find({ 'keywords': pathname }, function (error, files) {
 		var result=[];
 		var userList=[];
         if (files == undefined ||files.length==0) {
@@ -18,29 +16,31 @@ function searchHandler(req,res){
 				var i=loop.iteration();
 				userList=files[i].users;
 
-				User.find({'mac': {$in:userList}},{'mac':1,'nick':1,'online':1,},function (error,users) {					
+				User.find({'mac': {$in:userList}},{'mac':1,'nick':1,'online':1},function (error,users) {					
 					asyncFor(users.length, function(loop2) {
 						var j = loop2.iteration();
-						var type;
+						var online;
 						console.log(users[j].online);
 						if(users[j].online==true)
-							type='online';
+							online=true;
 						else
-							type='offline';
-						var temp={'name':files[i].name, 'hash':files[i].hash, 'mac':users[j].mac, 'nick':users[j].nick, 'size':files[i].size, 'type': type};
+							online=false;
+						var temp= { 'name':files[i].name, 'hash':files[i].hash, 'mac':users[j].mac, 
+                        'nick':users[j].nick, 'size':files[i].size, 'type':files[i].type, 'online': online};
+
 						result.push(temp);
 						loop2.next();
-						},
-						function(){
+					},
+					function() {
 						loop.next()
-						}								
-					);
+					});
 				});
 				
 				},
-				function(){console.log('search results for '+pathname);
-				console.log(result);
-				res.send(result);
+				function(){
+                    console.log('search results for '+pathname);
+				    console.log(result);
+				    res.send(result);
 				}
 			);
 		}
