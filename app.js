@@ -52,6 +52,14 @@ app.post('/download', function (req, res) {
     require('./transfers/download').downloadHandler(req, res);
 });
 
+app.get('/key',  function (req, res) {
+    require('./users/key').keyHandler(req, res);
+});
+
+app.get('/status',  function (req, res) {
+    require('./users/status').statusHandler(req, res);
+});
+
 app.post('/sync', function (req, res) {
     require('./users/sync').syncHandler(req, res);
 });
