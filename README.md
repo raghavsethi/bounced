@@ -121,7 +121,7 @@ Requests and responses
 **Server Action** Make appropriate changes to file table  
 
 ###POST /update
-**Request Body** transfer_id=XYZ, type=cancel/done, [newhash=XYZ]
+**Request Body** transferID=XYZ, status=canceled/done, [newHash=XYZ]
 **Response Body** {'status': 'OK', 'text':'xyz'}  
 **Client Action** Client cancels or completes download
 **Server Action** Modify the pending queue appropriately  
@@ -160,3 +160,13 @@ Use cases
 22. Hard drive space less-remove pendings.
 23. Requester recieves file while it is being replicated to other nodes as well
 24. Tranfer is corrupted for a bounced file - delete the file at the replicated node
+
+
+Cases for Update
+----------------
+
+			direct					firstleg				secondleg				delete
+
+done		delete all P + F		delete P, add new P 	delete all P + F		delete P
+
+canceled	delete all P + F		delete P				delete all P + F		
