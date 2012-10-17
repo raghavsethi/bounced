@@ -32,6 +32,7 @@ function pendingHandler(req, res, onlineUsers) {
             var result = [];
             var onlineUsers = [0];
             var onlineUserIPs = [0];
+            var onlineUserNicks = [0];
 
             if (error)
                 console.log(error);
@@ -58,14 +59,17 @@ function pendingHandler(req, res, onlineUsers) {
                     asyncFor(online.length, function (loop) {
                         onlineUsers.push(online[loop.iteration()].mac);
                         onlineUserIPs.push(online[loop.iteration()].ip);
+                        onlineUserNicks.push(online[loop.iteration()].nick);
                         loop.next();
 
                     }, function () {
                         for (i = 0; i < results.length; i++) {
+
                             var index = onlineUsers.indexOf(results[i].uploader);
+
                             if (index != -1) {
-                                //results[i]['uploaderIP'] = onlineUserIPs[index];
                                 results[i].uploaderIP = onlineUserIPs[index];
+                                results[i].nick = onlineUserNicks[index];
                                 pendings.push(results[i]);
                             }
                         }

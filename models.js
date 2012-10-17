@@ -21,7 +21,8 @@ var PendingSchema = new Schema({
   , fileSize    : Number
   , symKey      : String
   , type        : String
-  , uploaderIP  : String
+  , uploaderIP  : String 
+  , nick        : String
 });
 
 var UserSchema = new Schema({
