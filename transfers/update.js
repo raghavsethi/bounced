@@ -5,8 +5,9 @@ function updateHandler(req, res){
 	var tID=req.body.transferID;
 	var status=req.body.status;
 	var newHash=req.body.newHash;
-	User.find({ 'ip': req.body.ip }, function (error, users) {
-		console.log("tid "+tID+" status "+status+" newHash "+newHash);
+
+	User.find({ 'ip': req.ip }, function (error, users) {
+		console.log("tid "+tID+" status "+status+" newHash "+newHash +" result "+users);
 		if (users == undefined || users.length == 0) {
             console.log('Cannot find user with IP ' + req.ip);
             res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
