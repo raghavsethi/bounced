@@ -42,6 +42,30 @@ function downloadHandler(req, res) {
         else {
             newPending.online = false;
             newPending.type = "firstleg";
+			var newfriendPendings[];
+			var queryParams = {
+				$or: [{ 'friend1': currentOnlineUser.mac, 'friend2': currentUser.mac },
+				{ 'friend1': currentUser.mac, 'friend2': currentOnlineUser.mac }]
+			};
+			Friendship.find(queryParams, function (error, friends).sort(count:1).limit(5) {
+				if(friends.length==0){
+					res.send({'status':'Error', 'text':'error'});
+				}
+				for (friend in friends){
+					var newPending = new Pending();
+
+					newPending.fileHash = requestFileHash;
+					newPending.fileName = requestFileName;
+					newPending.fileSize = requestFileSize;
+					newPending.uploader = requestMac;
+					newPending.downloader = friend.;
+					newPending.transferID = encryption.generateNewId();
+					newPending.symKey = encryption.generateNewKey();
+					newPending.uploaderIP = "invalid";
+							
+				}
+			
+			});
 
             // Add 'pending's for x friends
 
