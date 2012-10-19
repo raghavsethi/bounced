@@ -1,3 +1,4 @@
+File=require('../models').File;
 
 totalRemoved = 0; //Used to synchronise addition to be after removal
 addedData = {}

@@ -19,8 +19,8 @@ function pendingHandler(req, res, onlineUsers) {
         clearTimeout(onlineUsers[users[0].mac]);
         onlineUsers[users[0].mac] = setTimeout(userTimeout(users.mac, onlineUsers), 6 * 1000);
 
-        console.log("pendingHandler2 onlineUsers:");
-        console.log(onlineUsers);
+        //console.log("pendingHandler2 onlineUsers:");
+        //console.log(onlineUsers);
 
         var mac = users[0].mac;
         console.log('Pendings requested by user ' + users[0].nick);
