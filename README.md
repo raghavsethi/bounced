@@ -161,6 +161,9 @@ Use cases
 23. Requester recieves file while it is being replicated to other nodes as well
 24. Tranfer is corrupted for a bounced file - delete the file at the replicated node
 
+Current priorities
+------------------
+* Logging - http://thechangelog.com/post/2844869169/winston-a-multi-transport-async-logging-library-for-node
 
 Cases for Update
 ----------------

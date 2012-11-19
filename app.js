@@ -22,8 +22,15 @@ http.createServer(app).listen(app.get('port'), function(){
 });
 
 // Initialize in-memory store of online users with timeouts
-//TODO: Make sure all users are marked 'offline' when the program begins.
-onlineUsers = {'test':'testTimeout'};
+
+onlineUsers = {};
+
+models.User.find({ 'online': true }, function (error, users) {
+    for (i = 0; i < users.length; i++) {
+        users[i].online = false;
+        users[i].save();
+    }
+});
 
 // Initialize models
 
