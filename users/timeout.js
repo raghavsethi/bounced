@@ -3,8 +3,7 @@ function userTimeout(mac, onlineUsers) {
 
     return function () {
 
-        console.log("userTimeout onlineUsers:");
-        console.log(onlineUsers);
+        //console.log(onlineUsers);
 
         User.findOne({ 'mac': mac }, function (error, user) {
             if (error)
@@ -20,6 +19,8 @@ function userTimeout(mac, onlineUsers) {
         console.log("User " + mac + " is now offline");
 
         delete (onlineUsers[mac]);
+
+        console.log("Online users: " + Object.keys(onlineUsers).length);
     }
 }
 

@@ -17,7 +17,7 @@ function pendingHandler(req, res, onlineUsers) {
         //console.log(onlineUsers);
 
         clearTimeout(onlineUsers[users[0].mac]);
-        onlineUsers[users[0].mac] = setTimeout(userTimeout(users.mac, onlineUsers), 6 * 1000);
+        onlineUsers[users[0].mac] = setTimeout(userTimeout(users[0].mac, onlineUsers), 6 * 1000);
 
         //console.log("pendingHandler2 onlineUsers:");
         //console.log(onlineUsers);
