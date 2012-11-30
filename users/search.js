@@ -16,6 +16,7 @@ function searchHandler(req,res){
 		var result=[];
 		var userList=[];
         if (files == undefined ||files.length==0) {
+			logger.info("no file found");
             console.log('No such file');
 			res.send(result);
         }
@@ -35,15 +36,16 @@ function searchHandler(req,res){
 							online=false;
 						var temp= { 'name':files[i].name, 'hash':files[i].hash, 'mac':users[j].mac, 
                         'nick':users[j].nick, 'size':files[i].size, 'type':files[i].type, 'online': online};
-
+						logger.info("found "+temp.name)
 						result.push(temp);
+						
 						loop2.next();
 					},
 					function() {
 						loop.next()
 					});
 				});
-				
+
 				},
 				function(){
                     console.log('search results for '+pathname);

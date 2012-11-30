@@ -87,8 +87,8 @@ function pendingHandler(req, res, onlineUsers) {
                         }
                         console.log('Pendings returned:');
                         //pendings[0].uploaderIP = "127.0.0.1";
-						if(pendings.length!=0)
-							logger.info("pending  "+nick+"  "+pendings);
+						for(i=0; i < pendings.length; i++)
+							logger.info("pending  "+nick+"  "+pendings[i].fileName+"  "+pendings[i].fileHash);
                         console.log(pendings);
                         res.send(pendings);
                     }

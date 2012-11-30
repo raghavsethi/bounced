@@ -36,6 +36,7 @@ function updateHandler(req, res){
 	            Pending.find({ 'transferID': tID }, { 'uploader': 1, 'fileHash': 1, 'type': 1 }, function (error, requests) {
 
 	                Pending.remove({ "transferID": tID }, function (err, removed) {
+						logger.info("Update  type "+ type + removed);
 	                    console.log(removed);
 	                });
 
@@ -50,10 +51,11 @@ function updateHandler(req, res){
 
 	                        newPending.save();
 	                        console.log("Pending to delete file added");
+							logger.info("Update  type "+ type + newPending + " added");
 	                        console.log(newPending);
 	                    }
 	                }
-					logger.info("Update  type "+ type + newPending);
+					
 	                res.send({ 'status': 'OK', 'text': 'Update Complete' });
 
 
