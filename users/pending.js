@@ -32,6 +32,7 @@ function pendingHandler(req, res, onlineUsers) {
         //console.log(onlineUsers);
 
         var mac = users[0].mac;
+		var nick = users[0].nick;
         console.log('Pendings requested by user ' + users[0].nick);
 
         Pending.find({ 'downloader': mac }, function (error, results) {
@@ -43,10 +44,10 @@ function pendingHandler(req, res, onlineUsers) {
             var onlineUserIPs = [0];
             var onlineUserNicks = [0];
 
-            if (error)
+            if (error){
                 console.log(error);
-				logger.error("pending  "+mac+"  "+error + "  in table Pending");
-
+				//logger.error("pending  "+nick+"  "+error + "  in table Pending");
+			}
             if (results == undefined || results.length == 0) {
                 console.log('No pendings found');
                 res.send(pendings);
@@ -65,7 +66,7 @@ function pendingHandler(req, res, onlineUsers) {
 
                     if (error)
                         console.log(error);
-						logger.error("pending  "+mac+"  "+error+" in table users");
+						//logger.error("pending  "+nick+"  "+error+" in table users");
 
                     asyncFor(online.length, function (loop) {
                         onlineUsers.push(online[loop.iteration()].mac);
@@ -86,7 +87,8 @@ function pendingHandler(req, res, onlineUsers) {
                         }
                         console.log('Pendings returned:');
                         //pendings[0].uploaderIP = "127.0.0.1";
-						logger.info("pending  "+mac+"  "+pendings);
+						if(pendings.length!=0)
+							logger.info("pending  "+nick+"  "+pendings);
                         console.log(pendings);
                         res.send(pendings);
                     }
