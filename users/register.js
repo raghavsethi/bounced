@@ -1,10 +1,18 @@
 ﻿var userTimeout = require('./timeout').userTimeout;
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)(),
+      new (winston.transports.File)({ filename: 'requests.log', json:false })
+    ]
+});
 
 function registerUserHandler(req, res) {
 
     User.find({ 'mac': req.body.mac }, function (error, users) {
 
         if (error) {
+			logger.info('register   cannot register user with ip ' + req.ip);
             res.send({ 'status': 'Error', 'text': error });
             return;
         }
@@ -35,6 +43,7 @@ function registerUserHandler(req, res) {
         
         var currentUser= users[0];
         currentUser.save();
+		logger.info('register   Saved user ' + currentUser);
         console.log('Saved user ' + currentUser);
 
         // Updating friend relationships asynchronously

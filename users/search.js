@@ -1,9 +1,17 @@
 var url = require("url");
+var winston = require('winston');
 File=require('../models').File;
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)(),
+      new (winston.transports.File)({ filename: 'searchQueries.log' })
+    ]
+});
 
 function searchHandler(req,res){
 	var pathname = req.params.query;
-
+	logger.info("IP: "+req.ip+" Query"+pathname);
+	console.log(pathname+"ghj");
 	File.find({ 'keywords': pathname }, function (error, files) {
 		var result=[];
 		var userList=[];

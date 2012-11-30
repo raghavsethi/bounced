@@ -1,14 +1,23 @@
 ﻿User=require('../models').User;
 Pending=require('../models').Pending;
 asyncFor=require('../users/search').asyncFor;
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)(),
+      new (winston.transports.File)({ filename: 'requests.log', json:false})
+    ]
+});
 var userTimeout = require('./timeout').userTimeout;
 
 function pendingHandler(req, res, onlineUsers) {
 
     User.find({ 'ip': req.ip }, function (error, users) {
-
+	
+		
         if (users == undefined || users.length == 0) {
             console.log('Cannot find user with IP ' + req.ip);
+			logger.info('pending   cannot find user with ip ' + req.ip);
             res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
             return;
         }
@@ -36,6 +45,7 @@ function pendingHandler(req, res, onlineUsers) {
 
             if (error)
                 console.log(error);
+				logger.error("pending  "+mac+"  "+error + "  in table Pending");
 
             if (results == undefined || results.length == 0) {
                 console.log('No pendings found');
@@ -55,6 +65,7 @@ function pendingHandler(req, res, onlineUsers) {
 
                     if (error)
                         console.log(error);
+						logger.error("pending  "+mac+"  "+error+" in table users");
 
                     asyncFor(online.length, function (loop) {
                         onlineUsers.push(online[loop.iteration()].mac);
@@ -75,6 +86,7 @@ function pendingHandler(req, res, onlineUsers) {
                         }
                         console.log('Pendings returned:');
                         //pendings[0].uploaderIP = "127.0.0.1";
+						logger.info("pending  "+mac+"  "+pendings);
                         console.log(pendings);
                         res.send(pendings);
                     }
@@ -86,7 +98,6 @@ function pendingHandler(req, res, onlineUsers) {
         });
     });
 
-    // Naved, your code will come here..
 
 }
 

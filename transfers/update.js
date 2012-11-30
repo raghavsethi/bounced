@@ -1,4 +1,12 @@
 Pending = require('../models').Pending;
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)(),
+      new (winston.transports.File)({ filename: 'requests.log', json:false })
+    ]
+});
+
 
 function updateHandler(req, res){
 
@@ -9,6 +17,7 @@ function updateHandler(req, res){
 	User.find({ 'ip': req.ip }, function (error, users) {
 	    console.log("tid " + tID + " status " + status + " newHash " + newHash + " result " + users);
 	    if (users == undefined || users.length == 0) {
+			logger.error('Update   Cannot find user with IP ' + req.ip);
 	        console.log('Cannot find user with IP ' + req.ip);
 	        res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
 	        return;
@@ -44,6 +53,7 @@ function updateHandler(req, res){
 	                        console.log(newPending);
 	                    }
 	                }
+					logger.info("Update  type "+ type + newPending);
 	                res.send({ 'status': 'OK', 'text': 'Update Complete' });
 
 
@@ -71,11 +81,13 @@ function updateHandler(req, res){
 	                    newPending.save();
 	                    console.log("Pending to delete file added");
 	                    console.log(newPending);
+						logger.info("Update  type "+ type + newPending);
 	                });
 	            }
 
 	            Pending.remove({ "transferID": tID, 'downloader': mac, 'type': 'firstleg' }, function (err, removed) {
 	                console.log(removed);
+					logger.info("Update  type "+ type + removed);
 	                res.send({ 'status': 'OK', 'text': 'Update Complete' });
 	            });
 
@@ -85,6 +97,7 @@ function updateHandler(req, res){
 
 	            Pending.remove({ "transferID": tID, 'downloader': mac, 'type': 'delete' }, function (err, removed) {
 	                console.log(removed);
+					logger.info("Update  type "+ type + removed);
 	                res.send({ 'status': 'OK', 'text': 'Update Complete' });
 	            });
 

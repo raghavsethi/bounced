@@ -1,5 +1,11 @@
 var encryption = require('./encryption');
-
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)(),
+      new (winston.transports.File)({ filename: 'requests.log', json:false })
+    ]
+});
 Pending = require('../models').Pending;
 Friendship = require('../models').Friendship;
 
@@ -59,7 +65,7 @@ function downloadHandler(req, res) {
                     bouncedPending.uploaderIP = "invalid";
                     bouncedPending.nick = 'He Who Must Not Named';
                     bouncedPending.type = "firstleg";
-                    console.log(bouncedPending)
+                    console.log(bouncedPending);
                     bounced.push(bouncedPending);
 
                 }
@@ -73,17 +79,22 @@ function downloadHandler(req, res) {
             if (error == null) {
                 if (users.length == 0) {
                     newPending.save();
-                    for (var i = 0; i < bounced.length; i++)
+					logger.info("Download   directPending added "+newPending);
+                    for (var i = 0; i < bounced.length; i++){
                         bounced[i].save();
-                    res.send({ 'status': 'OK', 'text': 'Download request accepted' })
+						logger.info("Download   bouncedPending added "+bounced[i]);
+					}
+                    res.send({ 'status': 'OK', 'text': 'Download request accepted' });
                 }
                 else {
-                    res.send({ 'status': 'Error', 'text': 'This download request already exists' })
+					logger.error("Download   This download request already exists "+ newPending.fileHash+"  "+req.ip);
+                    res.send({ 'status': 'Error', 'text': 'This download request already exists' });
                     return;
                 }
             }
             else {
-                res.send({ 'status': 'Error', 'text': error });
+				logger.error("Download   Trouble with reading pending");
+				res.send({ 'status': 'Error', 'text': error });
                 return;
             }
         });
