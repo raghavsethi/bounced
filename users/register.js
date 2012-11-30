@@ -9,55 +9,76 @@ var logger = new (winston.Logger)({
 
 function registerUserHandler(req, res) {
 
-    User.find({ 'mac': req.body.mac }, function (error, users) {
+    User.find({ 'nick': req.body.nick }, function (error, users) {
 
         if (error) {
-			logger.info('register   cannot register user with ip ' + req.ip);
+            logger.info('register.js-registerUserHandler: Cannot register user with IP ' + req.ip, error);
             res.send({ 'status': 'Error', 'text': error });
             return;
         }
 
-        if (users.length==0) {
-            console.log('New user arrived');
-            
-            var newuser = new User();
-            newuser.mac = req.body.mac;
-            newuser.dataDownloaded = 0;
-            newuser.dataUploaded = 0;
-            //TODO: Change when economics is added.
-            newuser.spaceAllocated = 0;
+        if (users.length > 0) {
 
-            users = [];
-            users.push(newuser);
+            if (users.length == 1 && users[0].mac === req.body.mac)
+            { }
+            else {
+                logger.info('register.js-registerUserHandler: Username already exists ' + req.body.nick, users);
+                res.send({ 'status': 'Error', 'text': 'This username is already registered' });
+                return;
+            }
         }
 
-        if (users.length > 1) {
-            console.log('Multiple users found for single mac');
-            res.send({ 'status': 'Error', 'text': 'Duplicate MAC exists' });
-            return;
-        }
+        User.find({ 'mac': req.body.mac }, function (error, users) {
 
-        users[0].online = true;
-        users[0].ip = req.ip;
-        users[0].nick = req.body.nick;
-        
-        var currentUser= users[0];
-        currentUser.save();
-		logger.info('register   Saved user ' + currentUser);
-        console.log('Saved user ' + currentUser);
+            if (error) {
+                logger.info('register.js-registerUserHandler: Cannot register user with IP ' + req.ip, error);
+                res.send({ 'status': 'Error', 'text': error });
+                return;
+            }
 
-        // Updating friend relationships asynchronously
-        updateAllFriendships(currentUser);
+            if (users.length == 0) {
+                console.log('New user arrived');
 
-        //TODO: Think about what the timeout should be (this code also in 'pending')
-        onlineUsers[currentUser.mac] = setTimeout(userTimeout(currentUser.mac, onlineUsers), 6 * 1000);
+                var newuser = new User();
+                newuser.mac = req.body.mac;
+                newuser.dataDownloaded = 0;
+                newuser.dataUploaded = 0;
+                //TODO: Change when economics is added.
+                newuser.spaceAllocated = 0;
 
-        console.log("registerHandler onlineUsers:");
-        console.log(onlineUsers);
+                users = [];
+                users.push(newuser);
+            }
 
-        res.send({ 'status': 'OK', 'text': 'Logged in successfully' });
+            if (users.length > 1) {
+                console.log('Multiple users found for single mac');
+                res.send({ 'status': 'Error', 'text': 'Duplicate MAC exists' });
+                return;
+            }
 
-    });
+            users[0].online = true;
+            users[0].ip = req.ip;
+            users[0].nick = req.body.nick;
+
+            var currentUser = users[0];
+            currentUser.save();
+            logger.info('register   Saved user ' + currentUser);
+            console.log('Saved user ' + currentUser);
+
+            // Updating friend relationships asynchronously
+            updateAllFriendships(currentUser);
+
+            //TODO: Think about what the timeout should be (this code also in 'pending')
+            onlineUsers[currentUser.mac] = setTimeout(userTimeout(currentUser.mac, onlineUsers), 6 * 1000);
+
+            console.log("registerHandler onlineUsers:");
+            console.log(onlineUsers);
+
+            res.send({ 'status': 'OK', 'text': 'Logged in successfully' });
+        });
+    })
+
+    
 }
 
 // Runs a loop through all online friends, calling updateFriendship on each
