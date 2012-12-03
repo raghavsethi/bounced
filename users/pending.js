@@ -8,6 +8,12 @@ var logger = new (winston.Logger)({
       new (winston.transports.File)({ filename: 'requests.log', json:false})
     ]
 });
+var pendingLogger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)(),
+      new (winston.transports.File)({ filename: 'pendings.log', json:false})
+    ]
+});
 var userTimeout = require('./timeout').userTimeout;
 
 function pendingHandler(req, res, onlineUsers) {
@@ -16,8 +22,8 @@ function pendingHandler(req, res, onlineUsers) {
 	
 		
         if (users == undefined || users.length == 0) {
-            console.log('Cannot find user with IP ' + req.ip);
-			logger.info('pending   cannot find user with ip ' + req.ip);
+            //console.log('Cannot find user with IP ' + req.ip);
+			logger.info('pending.js-pendingHandler: cannot find user with ip' + req.ip);
             res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
             return;
         }
@@ -27,13 +33,14 @@ function pendingHandler(req, res, onlineUsers) {
 
         clearTimeout(onlineUsers[users[0].mac]);
         onlineUsers[users[0].mac] = setTimeout(userTimeout(users[0].mac, onlineUsers), 6 * 1000);
+		console.log(onlineUsers[users[0].mac]);
 
         //console.log("pendingHandler2 onlineUsers:");
         //console.log(onlineUsers);
 
         var mac = users[0].mac;
 		var nick = users[0].nick;
-        console.log('Pendings requested by user ' + users[0].nick);
+        //console.log('Pendings requested by user ' + users[0].nick);
 
         Pending.find({ 'downloader': mac }, function (error, results) {
 
@@ -45,11 +52,12 @@ function pendingHandler(req, res, onlineUsers) {
             var onlineUserNicks = [0];
 
             if (error){
-                console.log(error);
-				//logger.error("pending  "+nick+"  "+error + "  in table Pending");
+                //console.log(error);
+				logger.error("pending  "+nick+"  "+error + "  in table Pending");
 			}
             if (results == undefined || results.length == 0) {
-                console.log('No pendings found');
+                //console.log('No pendings found');
+				pendingLogger.info('pending.js-pendingHandler: found no pendings for user ' + nick);
                 res.send(pendings);
             }
             else {
@@ -59,14 +67,13 @@ function pendingHandler(req, res, onlineUsers) {
                         users.push(results[i].uploader);
                 }
 
-                console.log("Users holding pending files:");
-                console.log(users);
+                //console.log("Users holding pending files:");
+                //console.log(users);
 
                 User.find({ 'online': true, 'mac': { $in: users} }, function (error, online) {
 
                     if (error)
-                        console.log(error);
-						//logger.error("pending  "+nick+"  "+error+" in table users");
+						logger.error('pending.js-pendingHandler: Error while reading Users for ' + nick);
 
                     asyncFor(online.length, function (loop) {
                         onlineUsers.push(online[loop.iteration()].mac);
@@ -85,11 +92,10 @@ function pendingHandler(req, res, onlineUsers) {
                                 pendings.push(results[i]);
                             }
                         }
-                        console.log('Pendings returned:');
+                        //console.log('Pendings returned:');
                         //pendings[0].uploaderIP = "127.0.0.1";
-						for(i=0; i < pendings.length; i++)
-							logger.info("pending  "+nick+"  "+pendings[i].fileName+"  "+pendings[i].fileHash);
-                        console.log(pendings);
+						logger.info('pending.js-pendingHandler: found ' + pendings.length + ' pendings for user ' + nick);
+                        //console.log(pendings);
                         res.send(pendings);
                     }
 				);

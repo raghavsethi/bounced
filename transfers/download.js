@@ -21,8 +21,11 @@ function downloadHandler(req, res) {
 
     User.find({ 'ip': req.ip }, function (error, users) {
 
-        // Error checking
-        //TODO: Check for error and multiple users for a single IP.
+        if (error) {
+            logger.warn('download.js-downloadHandler: Cannot find user with IP ' + req.ip, error);
+            res.send({ 'status': 'Error', 'text': error });
+            return;
+        }
 
         var requestDownloader = users[0].mac;
 
@@ -38,9 +41,10 @@ function downloadHandler(req, res) {
         newPending.uploaderIP = "invalid";
         newPending.nick = 'He Who Must Not Named';
         newPending.type = "direct";
-        console.log("\n\n");
-        console.log(newPending);
+        //console.log("\n\n");
+        //console.log(newPending);
         //newPending.save();
+		
         // Now behaviour will diverge depending on whether this is an online
         // or offline transfer
 
@@ -75,25 +79,25 @@ function downloadHandler(req, res) {
         }
 
 
-        Pending.find({ 'fileHash': newPending.fileHash, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, users) {
+        Pending.find({ 'fileHash': newPending.fileHash, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, pendingUsers) {
             if (error == null) {
-                if (users.length == 0) {
+                if (pendingUsers.length == 0) {
                     newPending.save();
-					logger.info("Download   directPending added "+newPending);
+					logger.info('download.js-downloadHandler: Added pending with type = direct to  ' + users[0].nick);
                     for (var i = 0; i < bounced.length; i++){
                         bounced[i].save();
-						logger.info("Download   bouncedPending added "+bounced[i]);
 					}
+					logger.info('download.js-downloadHandler: Added ' + bounced.length + ' pending(s) with type = firstleg ');
                     res.send({ 'status': 'OK', 'text': 'Download request accepted' });
                 }
                 else {
-					logger.error("Download   This download request already exists "+ newPending.fileHash+"  "+req.ip);
+					logger.info('download.js-downloadHandler: This download has already been requested');
                     res.send({ 'status': 'Error', 'text': 'This download request already exists' });
                     return;
                 }
             }
             else {
-				logger.error("Download   Trouble with reading pending");
+				logger.warn('download.js-downloadHandler: Could not read table Pending', error);
 				res.send({ 'status': 'Error', 'text': error });
                 return;
             }

@@ -17,12 +17,13 @@ function updateHandler(req, res){
 	User.find({ 'ip': req.ip }, function (error, users) {
 	    console.log("tid " + tID + " status " + status + " newHash " + newHash + " result " + users);
 	    if (users == undefined || users.length == 0) {
-			logger.error('Update   Cannot find user with IP ' + req.ip);
-	        console.log('Cannot find user with IP ' + req.ip);
+			logger.error('update.js-updatingHandler: Cannot find user with IP ' + req.ip);
+	        //console.log('Cannot find user with IP ' + req.ip);
 	        res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
 	        return;
 	    }
 	    var mac = users[0].mac
+		var nick = users[0].nick
 	    console.log(mac);
 	    console.log("downloader" + mac);
 	    console.log("tID" + tID);
@@ -33,32 +34,35 @@ function updateHandler(req, res){
 
 	        if (type == 'direct' || type == 'secondleg') {
 
-	            Pending.find({ 'transferID': tID }, { 'uploader': 1, 'fileHash': 1, 'type': 1 }, function (error, requests) {
+	            Pending.find({ 'transferID': tID }, { 'uploader': 1, 'fileHash': 1, 'type': 1,'downloader':1 }, function (error, requests) {
 
-	                Pending.remove({ "transferID": tID }, function (err, removed) {
+	                Pending.remove({ "transferID": tID }, function (err, removed) {	// removes all pending transfer with id tID from pending 
 						logger.info("Update  type "+ type + removed);
 	                    console.log(removed);
-	                });
+	                
+						for (var i = 0; i < requests.length; i++) {
 
-	                for (var i = 0; i < requests.length; i++) {
+							if (requests[i].type == 'secondleg') { // adds entries to pending for deletion of replicated files.
+								var newPending = new Pending();
+								newPending.fileHash = requests[i].fileHash;
+								newPending.downloader = requests[i].uploader;
+								newPending.transferID = tID;
+								newPending.type = 'delete';
 
-	                    if (requests[i].type == 'secondleg') {
-	                        var newPending = new Pending();
-	                        newPending.fileHash = requests[i].fileHash;
-	                        newPending.downloader = requests[i].uploader;
-	                        newPending.transferID = tID;
-	                        newPending.type = 'delete';
+								newPending.save();
+								console.log("Pending to delete file added");
+								//logger.info("Update  type "+ type + newPending + " added");
+								console.log(newPending);
+							}
+						}
+						var downloader = requests[0].downloader;
+						if(type=='direct')
+							logger.info('update.js-updateHandler: File transfer for direct leg completed, ' + downloader + ' has received file, made changes to pending' )
+						else
+							logger.info('update.js-updateHandler: File transfer for secondleg completed, ' + downloader + ' has received file, made changes to pending' )
+						res.send({ 'status': 'OK', 'text': 'Update Complete' });
 
-	                        newPending.save();
-	                        console.log("Pending to delete file added");
-							logger.info("Update  type "+ type + newPending + " added");
-	                        console.log(newPending);
-	                    }
-	                }
-					
-	                res.send({ 'status': 'OK', 'text': 'Update Complete' });
-
-
+					});
 
 	            });
 	        }
@@ -81,15 +85,15 @@ function updateHandler(req, res){
 	                    newPending.type = 'secondleg';
 
 	                    newPending.save();
-	                    console.log("Pending to delete file added");
+	                    logger.info('update.js-updateHandler: firstleg completed, ' + nick + ' has received file, made changes to pending' )
 	                    console.log(newPending);
-						logger.info("Update  type "+ type + newPending);
+						
 	                });
 	            }
 
 	            Pending.remove({ "transferID": tID, 'downloader': mac, 'type': 'firstleg' }, function (err, removed) {
 	                console.log(removed);
-					logger.info("Update  type "+ type + removed);
+					logger.info('update.js-updateHandler: firstleg completed, pending for' + nick + ' removed, made changes to pending' )
 	                res.send({ 'status': 'OK', 'text': 'Update Complete' });
 	            });
 
@@ -99,7 +103,7 @@ function updateHandler(req, res){
 
 	            Pending.remove({ "transferID": tID, 'downloader': mac, 'type': 'delete' }, function (err, removed) {
 	                console.log(removed);
-					logger.info("Update  type "+ type + removed);
+					logger.info('update.js-updateHandler: firstleg completed, file has been deleted by friend ' + nick )
 	                res.send({ 'status': 'OK', 'text': 'Update Complete' });
 	            });
 

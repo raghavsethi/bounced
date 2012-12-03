@@ -42,6 +42,7 @@ var FileSchema = new Schema({
   , type    : String
   , users 	: [String]
   , keywords: [String]
+  , score: Number
 });
 
 var FriendshipSchema = new Schema({
