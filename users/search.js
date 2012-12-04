@@ -20,100 +20,70 @@ function searchHandler(req,res){
 	}
 	console.log(query);
 	
-	/*File.find(query,function(error, files) {
-		var result=[];
-		score = {};
-		for (var i=0;i<files.length;i++){
-			high=0;
-			low=0;
-			var name = files[i].name.toLowerCase();
-			name = name.split(/[. -]/);
-			//console.log(name);
-			for(j=0;j<words.length;j++){
-				//console.log(words[j])
-				if(name.indexOf(words[j])>0){
-					high++;
-					//console.log(words[j]);
-				}
-				else
-					if(files[i].keywords.indexOf(words[j])>-1)
-						low++;
-			}
-			score[files[i]] = high*1.1+low*1.0;
-		}
-		//console.log(score);
-
-		var rankedFiles = []
-		for (var file in score)
-			rankedFiles.push([file, score[file]]);
-		rankedFiles.sort(function(a, b) {return b[1] - a[1]});
-		asyncFor(rankedFiles.length, function(loop) {  
-			var i=loop.iteration();
-			userList=files[i].users;
-			console.log(userList)
-			loop.next();
-		},
-		function(){
-            //console.log('search results for '+pathname);
-		    //console.log(result);
-			logger.info("found " + result.length + " results for query " + pathname + " made by " + req.ip);
-		    res.send(result);
-		});
-		
-		
-		
-		//res.send(rankedFiles);
-	
-	
-	});*/
 	File.find(query, function (error, files) {
 		var result=[];
 		var userList=[];
         if (files == undefined ||files.length==0) {
 			logger.info("search.js-searchHandler: No file found for query " + pathname + " made by " + req.ip);
-            //console.log('No such file');
 			res.send(result);
         }
 		else{
-			//console.log(files);
+			String.prototype.startsWith = function(str) 
+				{return (this.match("^"+str)==str);}
 			for (var i=0;i<files.length;i++){
 				score=0;
 				var name = files[i].name.toLowerCase();
 				name = name.split(/[. -]/);
-				//console.log(name);
 				for(j=0;j<words.length;j++){
-					//console.log(words[j])
-					if(name.indexOf(words[j])>0){
-						score+=1.1;
-						//console.log(words[j]);
+					console.log(name);
+					for(var k in name){
+						console.log(name[k],words[j]);
+						if(name[k] == words[j]){
+								score+=1.1;
+								console.log(score);
+						}
+						else{
+							if(name[k].match('^'+words[j])==words[j]){
+								score+=1.05;
+								console.log(score);
+							}
+							
+						}
+					
 					}
-					else
-						if(files[i].keywords.indexOf(words[j])>-1)
-							score=+1.0;
+					var keywords = files[i].keywords;
+					for(var k in keywords){
+						console.log(keywords[k],words[j]);
+						if(keywords[k] == words[j]){
+								score+=1.0;
+								console.log(score);
+						}
+						
+					
+					}
 				}
 				files[i].score = score;
 			}
 			files.sort(function(a, b) {return b.score - a.score});
 			results=[]
-			console.log(files);
 			asyncFor(files.length, function(loop) {  
 				var i=loop.iteration();
-				console.log(i);
-				console.log(files[i]);	
-				console.log(typeof files[i]);
 				userList=files[i].users;
-				console.log(userList);
+				score = 0;
 				User.find({'mac': {$in:userList}},{'mac':1,'nick':1,'online':1},function (error,users) {
-					console.log(users);
 					asyncFor(users.length, function(loop2) {
 						var j = loop2.iteration();
 						var online;
-						if(users[j].online==true)
+						if(users[j].online==true){
 							online=true;
-						else
+							score = files[i].score+2.0;
+						}
+						else{
 							online=false;
+							score = files[i].score
+						}
 						var temp= { 'name':files[i].name, 'hash':files[i].hash, 'mac':users[j].mac, 
-						'nick':users[j].nick, 'size':files[i].size, 'type':files[i].type, 'online': online, 'score':files[i].score};
+						'nick':users[j].nick, 'size':files[i].size, 'type':files[i].type, 'online': online, 'score':score};
 						result.push(temp);
 						
 						loop2.next();
@@ -125,8 +95,7 @@ function searchHandler(req,res){
 
 				},
 				function(){
-					//console.log('search results for '+pathname);
-					//console.log(result);
+					result.sort(function(a, b) {return b.score - a.score});
 					logger.info("found " + result.length + " results for query " + pathname + " made by " + req.ip);
 					res.send(result);
 				}
