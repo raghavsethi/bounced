@@ -19,11 +19,11 @@ var userTimeout = require('./timeout').userTimeout;
 function pendingHandler(req, res, onlineUsers) {
 
     User.find({ 'ip': req.ip }, function (error, users) {
-	
-		
+
+
         if (users == undefined || users.length == 0) {
             //console.log('Cannot find user with IP ' + req.ip);
-			logger.info('pending.js-pendingHandler: cannot find user with ip' + req.ip);
+			pendingLogger.info('pending.js-pendingHandler: cannot find user with ip' + req.ip);
             res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
             return;
         }
@@ -53,7 +53,7 @@ function pendingHandler(req, res, onlineUsers) {
 
             if (error){
                 //console.log(error);
-				logger.error("pending  "+nick+"  "+error + "  in table Pending");
+				pendingLogger.error("pending  "+nick+"  "+error + "  in table Pending");
 			}
             if (results == undefined || results.length == 0) {
                 //console.log('No pendings found');
@@ -73,7 +73,7 @@ function pendingHandler(req, res, onlineUsers) {
                 User.find({ 'online': true, 'mac': { $in: users} }, function (error, online) {
 
                     if (error)
-						logger.error('pending.js-pendingHandler: Error while reading Users for ' + nick);
+						pendingLogger.error('pending.js-pendingHandler: Error while reading Users for ' + nick);
 
                     asyncFor(online.length, function (loop) {
                         onlineUsers.push(online[loop.iteration()].mac);
@@ -94,7 +94,7 @@ function pendingHandler(req, res, onlineUsers) {
                         }
                         //console.log('Pendings returned:');
                         //pendings[0].uploaderIP = "127.0.0.1";
-						logger.info('pending.js-pendingHandler: found ' + pendings.length + ' pendings for user ' + nick);
+						pendingLogger.info('pending.js-pendingHandler: found ' + pendings.length + ' pendings for user ' + nick);
                         //console.log(pendings);
                         res.send(pendings);
                     }
@@ -110,7 +110,7 @@ function pendingHandler(req, res, onlineUsers) {
 }
 
 function checkIn(arr, val){
-	
+
 	for(var i=0;i<arr.length;i++){
 		if(arr[i]==val)
 			return true;

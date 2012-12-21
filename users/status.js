@@ -7,16 +7,16 @@ function statusHandler(req,res){
 	var total=5;
 	var result=[];
 	var map=[];
-	console.log("Request from " + ip + " received to check status.");
 	User.find({'ip': req.ip},{'mac':1},function (error,users) {
 		if(users === undefined || users.length === 0){
-			console.log('Unregistered user');
+            logger.info('status.js-statusHandler: Cannot find user with IP ' + req.ip, error);
 			res.send({ 'status': 'Error', 'text': 'Unregistered user' });
 			return;
 		}
 		Pending.find({ 'downloader': users[0].mac}, function (error, pendingRequests) {
 			if (pendingRequests === undefined || pendingRequests.length === 0) {
-				console.log('No pending requests found.');
+			    logger.info('status.js-statusHandler: Cannot find user with IP ' + req.ip, error);	
+                console.log('No pending requests found.');
 				res.send(result);
 				return;
 			}
@@ -36,6 +36,7 @@ function statusHandler(req,res){
 				for(var i in map){
 					result.push(map[i]);
 				}
+                logger.info('status.js-statusHandler: Sent information regarding ' + result.length + ' transfers for ip ' + req.ip);
 				res.send(result);
 				return;
 			}

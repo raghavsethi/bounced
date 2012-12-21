@@ -71,8 +71,7 @@ function registerUserHandler(req, res) {
             //TODO: Think about what the timeout should be (this code also in 'pending')
             onlineUsers[currentUser.mac] = setTimeout(userTimeout(currentUser.mac, onlineUsers), 6 * 1000);
 
-            console.log("registerHandler onlineUsers:");
-            console.log(onlineUsers);
+            logger.info('register.js-registerUserHandler: User Registered with IP ' + req.ip+ ', MAC ' + currentUser.mac + ' and nick ' + currentUser.nick );
 
             res.send({ 'status': 'OK', 'text': 'Logged in successfully' });
         });
