@@ -20,12 +20,6 @@ Tutorials:
 2. Passing parameters to callbacks: http://stackoverflow.com/questions/939032/jquery-pass-more-parameters-into-callback
 3. Closures: http://web.archive.org/web/20080209105120/http://blog.morrisjohns.com/javascript_closures_for_dummies
 
-Division of Labor
------------------
-1. Architecture (Raghav)
-2. Database operations and caching (Naved)
-3. Client (Mayank)
-
 Architecture Ideas
 ------------------
 
@@ -121,7 +115,7 @@ Requests and responses
 **Server Action** Make appropriate changes to file table  
 
 ###POST /update
-**Request Body** transferID=XYZ, status=canceled/done, [newHash=XYZ]
+**Request Body** transferID=XYZ, status=canceled/done, [newHash=XYZ], [uploader=XYZ]
 **Response Body** {'status': 'OK', 'text':'xyz'}  
 **Client Action** Client cancels or completes download
 **Server Action** Modify the pending queue appropriately  

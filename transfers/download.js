@@ -41,8 +41,8 @@ function downloadHandler(req, res) {
         newPending.uploaderIP = "invalid";
         newPending.nick = 'He Who Must Not Be Named';
         newPending.type = "direct";
-        
-		
+
+
         // Now behaviour will diverge depending on whether this is an online
         // or offline transfer
 
@@ -50,58 +50,81 @@ function downloadHandler(req, res) {
         var bounced = [];
         if (requestType.toLowerCase() == "bounced") {
             Friendship.find({ $or: [{ 'friend1': requestDownloader }, { 'friend2': requestDownloader}] }, {}, { limit: 5, sort: [['count', 'desc']] }, function (error, friends) {
-				//logger.info('download.js-downloadHandler: friends are  ' + friends);
-				for (var i = 0; i < friends.length; i++) {
+                logger.info('download.js-downloadHandler: friends are  ' + friends);
+                for (var i = 0; i < friends.length; i++) {
 
-					var bouncedPending = new Pending();
+                    var bouncedPending = new Pending();
 
-					bouncedPending.fileHash = requestFileHash;
-					bouncedPending.fileName = requestFileName;
-					bouncedPending.transferID = newPending.transferID;
-					bouncedPending.fileSize = requestFileSize;
-					bouncedPending.uploader = requestMac;
+                    bouncedPending.fileHash = requestFileHash;
+                    bouncedPending.fileName = requestFileName;
+                    bouncedPending.transferID = newPending.transferID;
+                    bouncedPending.fileSize = requestFileSize;
+                    bouncedPending.uploader = requestMac;
 
-					if (friends[0].friend1 == requestMac)
-						bouncedPending.downloader = friends[0].friend2;
-					else
-						bouncedPending.downloader = friends[0].friend1;
-					
+                    if (friends[i].friend1 == requestMac)
+                        bouncedPending.downloader = friends[i].friend2;
+                    else
+                        bouncedPending.downloader = friends[i].friend1;
+
                     bouncedPending.uploaderIP = "invalid";
-					bouncedPending.nick = 'He Who Must Not Named';
-					bouncedPending.type = "firstleg";
-					console.log(bouncedPending);
-					bounced.push(bouncedPending);
+                    bouncedPending.nick = 'He Who Must Not Named';
+                    bouncedPending.type = "firstleg";
+                    console.log(bouncedPending);
+                    bounced.push(bouncedPending);
 
-					}
+                }
+
+                Pending.find({ 'fileHash': newPending.fileHash, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, pendingUsers) {
+                    if (error == null) {
+                        if (pendingUsers.length == 0) {
+                            newPending.save();
+                            for (var i = 0; i < bounced.length; i++) {
+                                bounced[i].save();
+                            }
+                            logger.info('download.js-downloadHandler: Added pending to  ' + users[0].nick + ' with type = direct and ' + bounced.length + ' pending(s) with type = firstleg ');
+                            res.send({ 'status': 'OK', 'text': 'Download request accepted' });
+                        }
+                        else {
+                            logger.info('download.js-downloadHandler: This download has already been requested');
+                            res.send({ 'status': 'Error', 'text': 'This download request already exists' });
+                            return;
+                        }
+                    }
+                    else {
+                        logger.warn('download.js-downloadHandler: Could not read table Pending', error);
+                        res.send({ 'status': 'Error', 'text': error });
+                        return;
+                    }
+                });
 
             });
 
         }
+        else {
 
-
-        Pending.find({ 'fileHash': newPending.fileHash, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, pendingUsers) {
-            if (error == null) {
-                if (pendingUsers.length == 0) {
-                    newPending.save();
-                    for (var i = 0; i < bounced.length; i++){
-                        bounced[i].save();
-					}
-					logger.info('download.js-downloadHandler: Added pending to  ' + users[0].nick + ' with type = direct and ' + bounced.length + ' pending(s) with type = firstleg ');
-                    res.send({ 'status': 'OK', 'text': 'Download request accepted' });
+            Pending.find({ 'fileHash': newPending.fileHash, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, pendingUsers) {
+                if (error == null) {
+                    if (pendingUsers.length == 0) {
+                        newPending.save();
+                        for (var i = 0; i < bounced.length; i++) {
+                            bounced[i].save();
+                        }
+                        logger.info('download.js-downloadHandler: Added pending to  ' + users[0].nick + ' with type = direct and ' + bounced.length + ' pending(s) with type = firstleg ');
+                        res.send({ 'status': 'OK', 'text': 'Download request accepted' });
+                    }
+                    else {
+                        logger.info('download.js-downloadHandler: This download has already been requested');
+                        res.send({ 'status': 'Error', 'text': 'This download request already exists' });
+                        return;
+                    }
                 }
                 else {
-					logger.info('download.js-downloadHandler: This download has already been requested');
-                    res.send({ 'status': 'Error', 'text': 'This download request already exists' });
+                    logger.warn('download.js-downloadHandler: Could not read table Pending', error);
+                    res.send({ 'status': 'Error', 'text': error });
                     return;
                 }
-            }
-            else {
-				logger.warn('download.js-downloadHandler: Could not read table Pending', error);
-				res.send({ 'status': 'Error', 'text': error });
-                return;
-            }
-        });
-
+            });
+        }
     });
 
 }

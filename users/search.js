@@ -4,7 +4,7 @@ File=require('../models').File;
 var logger = new (winston.Logger)({
     transports: [
       new (winston.transports.Console)(),
-      new (winston.transports.File)({ filename: 'searchQueries.log',json:false })
+      new (winston.transports.File)({ filename: 'searchQueries.log',json:false, timestamp: function() { return (new Date());}})
     ]
 });
 

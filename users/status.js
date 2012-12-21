@@ -1,6 +1,12 @@
 Pending=require('../models').Pending;
 User=require('../models').User;
-
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)(),
+      new (winston.transports.File)({ filename: 'requests.log', json:false })
+    ]
+});
 function statusHandler(req,res){
 	console.log(req.ip);
 	var ip=req.ip;
