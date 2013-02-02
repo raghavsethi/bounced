@@ -28,9 +28,17 @@ function updateHandler(req, res){
 	    console.log(mac);
 	    console.log("downloader" + mac);
 	    console.log("tID" + tID);
-	    Pending.find({ 'transferID': parseFloat(tID), 'downloader': mac, 'uploader': uploaderMac }, { 'type': 1 }, function (error, updatingClient) {
-	        console.log(updatingClient);
-	        var type = updatingClient[0].type;
+	    Pending.find({ 'transferID': parseFloat(tID), 'downloader': mac, 'uploader': uploaderMac }, { 'type': 1 }, function (error, relevantPending) {
+
+	        if (relevantPending == undefined || relevantPending.length == 0) {
+	            logger.error('Unable to find pending with given parameters');
+	            res.send({ 'status': 'Error', 'text': 'Unable to find pending' });
+	            return;
+	        }
+
+	        console.log(relevantPending);
+	        var type = relevantPending[0].type;
+
 	        console.log(type);
 
 	        if (type == 'direct' || type == 'secondleg') {

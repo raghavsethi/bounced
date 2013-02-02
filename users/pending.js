@@ -28,7 +28,7 @@ function pendingHandler(req, res) {
             res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
             return;
         }
-       
+
         var mac = users[0].mac;
         var nick = users[0].nick;
 
@@ -53,7 +53,9 @@ function pendingHandler(req, res) {
             else {
 
                 for (i = 0; i < results.length; i++) {
-                    if (users.indexOf(results[i].uploader) == -1)
+                    if (results[i].uploader == "0000000000000000")
+                        pendings.push(results[i]);
+                    else if (users.indexOf(results[i].uploader) == -1)
                         users.push(results[i].uploader);
                 }
 
