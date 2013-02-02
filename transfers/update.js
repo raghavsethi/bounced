@@ -28,7 +28,7 @@ function updateHandler(req, res){
 	    console.log(mac);
 	    console.log("downloader" + mac);
 	    console.log("tID" + tID);
-	    Pending.find({ 'transferID': parseFloat(tID), 'downloader': mac, 'uploader':uploaderMac }, { 'type': 1 }, function (error, updatingClient) {
+	    Pending.find({ 'transferID': parseFloat(tID), 'downloader': mac, 'uploader': uploaderMac }, { 'type': 1 }, function (error, updatingClient) {
 	        console.log(updatingClient);
 	        var type = updatingClient[0].type;
 	        console.log(type);
@@ -104,7 +104,7 @@ function updateHandler(req, res){
 
 	                Pending.remove({ "transferID": tID, 'downloader': mac, 'type': 'firstleg' }, function (err, removed) {
 	                    console.log(removed);
-	                    logger.info('update.js-updateHandler: firstleg not completed, pending for' + nick + ' removed)
+	                    logger.info('update.js-updateHandler: firstleg not completed, pending for' + nick + ' removed');
 	                    res.send({ 'status': 'OK', 'text': 'Update Complete' });
 	                });
 	            }

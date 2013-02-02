@@ -1,7 +1,10 @@
 ﻿User=require('../models').User;
 Pending=require('../models').Pending;
 asyncFor=require('../users/search').asyncFor;
+
 var winston = require('winston');
+var updateLastPingTime = require('./online').updateLastPingTime;
+
 var logger = new (winston.Logger)({
     transports: [
       new (winston.transports.Console)(),
@@ -14,26 +17,22 @@ var pendingLogger = new (winston.Logger)({
       new (winston.transports.File)({ filename: 'pendings.log', json:false})
     ]
 });
-var userTimeout = require('./timeout').userTimeout;
 
-function pendingHandler(req, res, onlineUsers) {
+
+function pendingHandler(req, res) {
 
     User.find({ 'ip': req.ip }, function (error, users) {
 
-
         if (users == undefined || users.length == 0) {
-            //console.log('Cannot find user with IP ' + req.ip);
-			pendingLogger.info('pending.js-pendingHandler: cannot find user with ip' + req.ip);
+            pendingLogger.info('pending.js-pendingHandler: cannot find user with ip' + req.ip);
             res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
             return;
         }
-
-        clearTimeout(onlineUsers[users[0].mac]);
-        onlineUsers[users[0].mac] = setTimeout(userTimeout(users[0].mac, onlineUsers), 6 * 1000);
-		console.log(onlineUsers[users[0].mac]);
-
+       
         var mac = users[0].mac;
-		var nick = users[0].nick;
+        var nick = users[0].nick;
+
+        updateLastPingTime(mac); // Update the time of the last ping for this user
 
         Pending.find({ 'downloader': mac }, function (error, results) {
 
@@ -44,11 +43,11 @@ function pendingHandler(req, res, onlineUsers) {
             var onlineUserIPs = [0];
             var onlineUserNicks = [0];
 
-            if (error){
- 				pendingLogger.error("pending  "+ nick +"  "+ error + "  in table Pending");
-			}
+            if (error) {
+                pendingLogger.error("pending  " + nick + "  " + error + "  in table Pending");
+            }
             if (results == undefined || results.length == 0) {
-				pendingLogger.info('pending.js-pendingHandler: found no pendings for user ' + nick);
+                pendingLogger.info('pending.js-pendingHandler: found no pendings for user ' + nick);
                 res.send(pendings);
             }
             else {
@@ -64,7 +63,7 @@ function pendingHandler(req, res, onlineUsers) {
                 User.find({ 'online': true, 'mac': { $in: users} }, function (error, online) {
 
                     if (error)
-						pendingLogger.error('pending.js-pendingHandler: Error while reading Users for ' + nick);
+                        pendingLogger.error('pending.js-pendingHandler: Error while reading Users for ' + nick);
 
                     asyncFor(online.length, function (loop) {
                         onlineUsers.push(online[loop.iteration()].mac);
@@ -85,7 +84,7 @@ function pendingHandler(req, res, onlineUsers) {
                         }
                         //console.log('Pendings returned:');
                         //pendings[0].uploaderIP = "127.0.0.1";
-						pendingLogger.info('pending.js-pendingHandler: found ' + pendings.length + ' pendings for user ' + nick);
+                        pendingLogger.info('pending.js-pendingHandler: found ' + pendings.length + ' pendings for user ' + nick);
                         //console.log(pendings);
                         res.send(pendings);
                     }

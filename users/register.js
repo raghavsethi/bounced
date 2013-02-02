@@ -1,5 +1,7 @@
-﻿var userTimeout = require('./timeout').userTimeout;
+﻿var addToOnlineList = require('./online').addToOnlineList;
 var winston = require('winston');
+
+
 var logger = new (winston.Logger)({
     transports: [
       new (winston.transports.Console)(),
@@ -22,7 +24,7 @@ function registerUserHandler(req, res) {
             if (users.length == 1 && users[0].mac === req.body.mac)
             { }
             else {
-                logger.error('register.js-registerUserHandler: Username ' + req.body.nick +'  already exists with mac '+  users[0].mac);
+                logger.error('register.js-registerUserHandler: Username ' + req.body.nick + '  already exists with mac ' + users[0].mac);
                 res.send({ 'status': 'Error', 'text': 'This username is already registered' });
                 return;
             }
@@ -64,13 +66,12 @@ function registerUserHandler(req, res) {
             currentUser.save();
             logger.info('register   Saved user ' + currentUser.nick);
 
+            addToOnlineList(users[0].mac);
+
             // Updating friend relationships asynchronously
             updateAllFriendships(currentUser);
 
-            //TODO: Think about what the timeout should be (this code also in 'pending')
-            onlineUsers[currentUser.mac] = setTimeout(userTimeout(currentUser.mac, onlineUsers), 6 * 1000);
-
-            logger.info('register.js-registerUserHandler: User Registered with IP ' + req.ip+ ', MAC ' + currentUser.mac + ' and nick ' + currentUser.nick );
+            logger.info('register.js-registerUserHandler: User Registered with IP ' + req.ip + ', MAC ' + currentUser.mac + ' and nick ' + currentUser.nick);
 
             res.send({ 'status': 'OK', 'text': 'Logged in successfully' });
         });

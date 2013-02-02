@@ -3,6 +3,8 @@ var express = require('express')
   , path = require('path')
   , models = require('./models');
 
+var clearInactiveUsers = require('./users/online.js').clearInactiveUsers;
+
 var app = express();
 
 app.configure(function(){
@@ -20,9 +22,11 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
 
-// Initialize in-memory store of online users with timeouts
+// Initialize users and ping times
 
-onlineUsers = {};
+GLOBAL.userLastPingTimes = {};
+
+setInterval(clearInactiveUsers, 3000);
 
 models.User.find({ 'online': true }, function (error, users) {
     for (i = 0; i < users.length; i++) {
@@ -47,7 +51,7 @@ app.post('/register', function (req, res) {
 });
 
 app.get('/pending',  function (req, res) {
-    require('./users/pending').pendingHandler(req, res, onlineUsers);
+    require('./users/pending').pendingHandler(req, res);
 });
 
 app.get('/search/:query',  function (req, res) {
@@ -73,3 +77,5 @@ app.get('/status',  function (req, res) {
 app.post('/sync', function (req, res) {
     require('./users/sync').syncHandler(req, res);
 });
+
+exports.userLastPingTimes = userLastPingTimes;
