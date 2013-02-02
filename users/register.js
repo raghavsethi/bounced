@@ -12,7 +12,7 @@ function registerUserHandler(req, res) {
     User.find({ 'nick': req.body.nick }, function (error, users) {
 
         if (error) {
-            logger.info('register.js-registerUserHandler: Cannot register user with IP ' + req.ip, error);
+            logger.error('register.js-registerUserHandler: Cannot register user with IP ' + req.ip, error);
             res.send({ 'status': 'Error', 'text': error });
             return;
         }
@@ -22,7 +22,7 @@ function registerUserHandler(req, res) {
             if (users.length == 1 && users[0].mac === req.body.mac)
             { }
             else {
-                logger.info('register.js-registerUserHandler: Username already exists ' + req.body.nick, users);
+                logger.error('register.js-registerUserHandler: Username ' + req.body.nick +'  already exists with mac '+  users[0].mac);
                 res.send({ 'status': 'Error', 'text': 'This username is already registered' });
                 return;
             }
@@ -31,7 +31,7 @@ function registerUserHandler(req, res) {
         User.find({ 'mac': req.body.mac }, function (error, users) {
 
             if (error) {
-                logger.info('register.js-registerUserHandler: Cannot register user with IP ' + req.ip, error);
+                logger.error('register.js-registerUserHandler: Cannot register user with IP ' + req.ip, error);
                 res.send({ 'status': 'Error', 'text': error });
                 return;
             }
@@ -51,7 +51,7 @@ function registerUserHandler(req, res) {
             }
 
             if (users.length > 1) {
-                console.log('Multiple users found for single mac');
+                logger.error('Multiple users found for single mac');
                 res.send({ 'status': 'Error', 'text': 'Duplicate MAC exists' });
                 return;
             }
@@ -62,8 +62,7 @@ function registerUserHandler(req, res) {
 
             var currentUser = users[0];
             currentUser.save();
-            logger.info('register   Saved user ' + currentUser);
-            console.log('Saved user ' + currentUser);
+            logger.info('register   Saved user ' + currentUser.nick);
 
             // Updating friend relationships asynchronously
             updateAllFriendships(currentUser);

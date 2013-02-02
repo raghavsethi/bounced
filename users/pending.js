@@ -28,19 +28,12 @@ function pendingHandler(req, res, onlineUsers) {
             return;
         }
 
-        //console.log("pendingHandler onlineUsers:");
-        //console.log(onlineUsers);
-
         clearTimeout(onlineUsers[users[0].mac]);
         onlineUsers[users[0].mac] = setTimeout(userTimeout(users[0].mac, onlineUsers), 6 * 1000);
 		console.log(onlineUsers[users[0].mac]);
 
-        //console.log("pendingHandler2 onlineUsers:");
-        //console.log(onlineUsers);
-
         var mac = users[0].mac;
 		var nick = users[0].nick;
-        //console.log('Pendings requested by user ' + users[0].nick);
 
         Pending.find({ 'downloader': mac }, function (error, results) {
 
@@ -52,11 +45,9 @@ function pendingHandler(req, res, onlineUsers) {
             var onlineUserNicks = [0];
 
             if (error){
-                //console.log(error);
-				pendingLogger.error("pending  "+nick+"  "+error + "  in table Pending");
+ 				pendingLogger.error("pending  "+ nick +"  "+ error + "  in table Pending");
 			}
             if (results == undefined || results.length == 0) {
-                //console.log('No pendings found');
 				pendingLogger.info('pending.js-pendingHandler: found no pendings for user ' + nick);
                 res.send(pendings);
             }
