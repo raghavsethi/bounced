@@ -30,10 +30,10 @@ function statusHandler(req,res){
 				console.log(pendingRequests);
 				for (i = 0; i < pendingRequests.length; i++) {
 					if(map[pendingRequests[i].transferID]===undefined && pendingRequests[i].type==="secondleg"){
-						map[pendingRequests[i].transferID]={'transferID':pendingRequests[i].transferID,'hash':pendingRequests[i].fileHash,'sent':1,'total':5};
+						map[pendingRequests[i].transferID]={'transferID':pendingRequests[i].transferID,'hash':pendingRequests[i].fileHash,'fileName':pendingRequests[i].fileName,'fileSize':pendingRequests[i].fileSize,'sent':1,'total':5};
 					}
 					else if(map[pendingRequests[i].transferID]===undefined){
-						map[pendingRequests[i].transferID]={'transferID':pendingRequests[i].transferID,'hash':pendingRequests[i].fileHash,'sent':0,'total':5};
+						map[pendingRequests[i].transferID]={'transferID':pendingRequests[i].transferID,'hash':pendingRequests[i].fileHash,'fileName':pendingRequests[i].fileName,'fileSize':pendingRequests[i].fileSize,'sent':0,'total':5};
 					}
 					else if(pendingRequests[i].type==="secondleg"){
 						map[pendingRequests[i].transferID]['sent']++;

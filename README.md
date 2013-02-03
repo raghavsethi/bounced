@@ -92,8 +92,8 @@ Requests and responses
 
 ###GET /status
 **Request Body** None  
-**Response Body** {'transferId':XYZ, 'hash':XYZ, 'mac': XYZ, 'sent': 2, 'total': 5} 
-**Client Action** When the pending tab is selected
+**Response Body** [{'transferId':XYZ, 'hash':XYZ, 'mac': XYZ, 'sent': 2, 'total': 5},]
+**Client Action** Every x seconds, display on the 'bounces' tab
 **Server Action** Compute which transferIDs have what status
 
 ###POST /register
