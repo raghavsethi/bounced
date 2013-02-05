@@ -49,10 +49,10 @@ function downloadHandler(req, res) {
 
         var bounced = [];
         if (requestType.toLowerCase() == "bounced") {
-            Friendship.find({ $or: [{ 'friend1': requestDownloader }, { 'friend2': requestDownloader}] }, {}, { limit: 10, sort: [['count', 'desc']] }, function (error, friends) {
+            Friendship.find({ $or: [{ 'friend1': requestDownloader }, { 'friend2': requestDownloader}] }, {}, { limit: 5, sort: [['count', 'desc']] }, function (error, friends) {
                 logger.info('download.js-downloadHandler: friends are  ' + friends);
                 for (var i = 0; i < friends.length; i++) {
-
+                    logger.info('download.js-downloadHandler: friends are  ' + friends);
                     var bouncedPending = new Pending();
 
                     bouncedPending.fileHash = requestFileHash;
@@ -61,19 +61,23 @@ function downloadHandler(req, res) {
                     bouncedPending.fileSize = requestFileSize;
                     bouncedPending.uploader = requestMac;
 
-                    if (friends[i].friend1 == requestMac)
+                    if (friends[i].friend1 == requestDownloader) {
                         bouncedPending.downloader = friends[i].friend2;
-                    else
+                        logger.info("download.js-downloadHandler:  Enters if and downloader is " + friends[i].friend1 + "[[[" + bouncedPending.downloader);
+                    }
+                    else {
                         bouncedPending.downloader = friends[i].friend1;
-                    if (bouncedPending.downloader == requestMac)
+                        logger.info("download.js-downloadHandler:  Enters else and downloader is " + bouncedPending.downloader);
+                    }
+                    
+                    if (bouncedPending.downloader == requestMac)// || bouncedPending.downloader == requestDownloader)
                         continue;
                     bouncedPending.uploaderIP = "invalid";
                     bouncedPending.nick = 'He Who Must Not Named';
                     bouncedPending.type = "firstleg";
-                    console.log(bouncedPending);
+                    logger.info("download.js-downloadHandler:  Bounced Pending to be added " + bouncedPending);
                     bounced.push(bouncedPending);
-                    if (bounced.length == 5)
-                        break;
+
 
                 }
 
