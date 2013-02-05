@@ -19,7 +19,7 @@ function statusHandler(req,res){
 			res.send({ 'status': 'Error', 'text': 'Unregistered user' });
 			return;
 		}
-		Pending.find({ 'downloader': users[0].mac}, function (error, pendingRequests) {
+		Pending.find({ 'downloader': users[0].mac, 'type':{$in:['firstleg','secondleg']}}, function (error, pendingRequests) {
 			if (pendingRequests === undefined || pendingRequests.length === 0) {
 			    logger.info('status.js-statusHandler: Cannot find user with IP ' + req.ip, error);	
                 console.log('No pending requests found.');

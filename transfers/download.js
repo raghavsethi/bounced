@@ -49,7 +49,7 @@ function downloadHandler(req, res) {
 
         var bounced = [];
         if (requestType.toLowerCase() == "bounced") {
-            Friendship.find({ $or: [{ 'friend1': requestDownloader }, { 'friend2': requestDownloader}] }, {}, { limit: 5, sort: [['count', 'desc']] }, function (error, friends) {
+            Friendship.find({ $or: [{ 'friend1': requestDownloader }, { 'friend2': requestDownloader}] }, {}, { limit: 10, sort: [['count', 'desc']] }, function (error, friends) {
                 logger.info('download.js-downloadHandler: friends are  ' + friends);
                 for (var i = 0; i < friends.length; i++) {
 
@@ -65,12 +65,15 @@ function downloadHandler(req, res) {
                         bouncedPending.downloader = friends[i].friend2;
                     else
                         bouncedPending.downloader = friends[i].friend1;
-
+                    if (bouncedPending.downloader == requestMac)
+                        continue;
                     bouncedPending.uploaderIP = "invalid";
                     bouncedPending.nick = 'He Who Must Not Named';
                     bouncedPending.type = "firstleg";
                     console.log(bouncedPending);
                     bounced.push(bouncedPending);
+                    if (bounced.length == 5)
+                        break;
 
                 }
 
