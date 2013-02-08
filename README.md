@@ -115,7 +115,7 @@ Requests and responses
 **Server Action** Make appropriate changes to file table  
 
 ###POST /update
-**Request Body** transferID=XYZ, status=canceled/done, [newHash=XYZ], [uploader=XYZ]
+**Request Body** transferID=XYZ, status=canceled/done/hash_mismatch, [newHash=XYZ], [uploader=XYZ]
 **Response Body** {'status': 'OK', 'text':'xyz'}  
 **Client Action** Client cancels or completes download
 **Server Action** Modify the pending queue appropriately  
