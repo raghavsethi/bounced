@@ -55,7 +55,7 @@ app.get('/pending',  function (req, res) {
 });
 
 app.get('/search/:query',  function (req, res) {
-    require('./users/search').searchHandler(req, res);
+    require('./transfers/search').searchHandler(req, res);
 });
 
 app.post('/download', function (req, res) {
@@ -76,6 +76,10 @@ app.get('/status',  function (req, res) {
 
 app.post('/sync', function (req, res) {
     require('./users/sync').syncHandler(req, res);
+});
+
+app.post('/checkuser', function (req, res) {
+    require('./users/checkuser').checkUserHandler(req, res);
 });
 
 exports.userLastPingTimes = userLastPingTimes;

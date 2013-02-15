@@ -1,9 +1,7 @@
-
-
 var clearInactiveUsers = function () {
     var current = new Date().getTime() / 1000;
 
-    console.log("Online users:");
+    console.log("Online users: ")
     console.log(userLastPingTimes);
 
     for (user in userLastPingTimes) {

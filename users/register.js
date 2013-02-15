@@ -19,6 +19,12 @@ function registerUserHandler(req, res) {
             return;
         }
 
+        if (req.body.nick.length === 0) {
+            logger.error('register.js-registerUserHandler: Invalid username for IP ' + req.ip, error);
+            res.send({ 'status': 'Error', 'text': "Invalid username" });
+            return;
+        }
+
         if (users.length > 0) {
 
             if (users.length == 1 && users[0].mac === req.body.mac)
@@ -96,7 +102,7 @@ function updateAllFriendships(currentUser) {
 
 // Finds the friendship and increments count or creates a new friendship
 function updateFriendship(currentUser, currentOnlineUser) {
-
+    
     var queryParams = {
         $or: [{ 'friend1': currentOnlineUser.mac, 'friend2': currentUser.mac },
             { 'friend1': currentUser.mac, 'friend2': currentOnlineUser.mac }]

@@ -1,6 +1,6 @@
 ﻿User=require('../models').User;
 Pending=require('../models').Pending;
-asyncFor=require('../users/search').asyncFor;
+asyncFor=require('../transfers/search').asyncFor;
 
 var winston = require('winston');
 var updateLastPingTime = require('./online').updateLastPingTime;
