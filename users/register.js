@@ -11,16 +11,18 @@ var logger = new (winston.Logger)({
 
 function registerUserHandler(req, res) {
 
+    var clientVersion = req.body.version;
+
     User.find({ 'nick': req.body.nick }, function (error, users) {
 
         if (error) {
-            logger.error('register.js-registerUserHandler: Cannot register user with IP ' + req.ip, error);
+            logger.error('register.js-registerUserHandler: Unable to register. Reason - Mongo error. IP' + req.ip);
             res.send({ 'status': 'Error', 'text': error });
             return;
         }
 
         if (req.body.nick.length === 0) {
-            logger.error('register.js-registerUserHandler: Invalid username for IP ' + req.ip, error);
+            logger.error('register.js-registerUserHandler: Unable to register. Reason - Invalid Userneme. IP'  + req.ip);
             res.send({ 'status': 'Error', 'text': "Invalid username" });
             return;
         }
@@ -30,7 +32,7 @@ function registerUserHandler(req, res) {
             if (users.length == 1 && users[0].mac === req.body.mac)
             { }
             else {
-                logger.error('register.js-registerUserHandler: Username ' + req.body.nick + '  already exists with mac ' + users[0].mac);
+                logger.error('register.js-registerUserHandler: Unable to register. Reason - Username ' + req.body.nick + '  already exists. IP'  + req.ip);
                 res.send({ 'status': 'Error', 'text': 'This username is already registered' });
                 return;
             }
@@ -39,14 +41,13 @@ function registerUserHandler(req, res) {
         User.find({ 'mac': req.body.mac }, function (error, users) {
 
             if (error) {
-                logger.error('register.js-registerUserHandler: Cannot register user with IP ' + req.ip, error);
+                logger.error('register.js-registerUserHandler: Unable to register. Reason - Mongo error. IP' + req.ip);
                 res.send({ 'status': 'Error', 'text': error });
                 return;
             }
 
             if (users.length == 0) {
-                console.log('New user arrived');
-
+                
                 var newuser = new User();
                 newuser.mac = req.body.mac;
                 newuser.dataDownloaded = 0;
@@ -59,7 +60,7 @@ function registerUserHandler(req, res) {
             }
 
             if (users.length > 1) {
-                logger.error('Multiple users found for single mac');
+                logger.error('register.js-registerUserHandler: Unable to register. Reason - Duplicate MAC. IP' + req.ip);
                 res.send({ 'status': 'Error', 'text': 'Duplicate MAC exists' });
                 return;
             }
@@ -70,7 +71,7 @@ function registerUserHandler(req, res) {
 
             var currentUser = users[0];
             currentUser.save();
-            logger.info('register   Saved user ' + currentUser.nick);
+            //logger.info('register   Saved user ' + currentUser.nick);
 
             addToOnlineList(users[0].mac);
 

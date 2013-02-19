@@ -18,7 +18,7 @@ function updateHandler(req, res){
 	User.find({ 'ip': req.ip }, function (error, users) {
 	    console.log("tid " + tID + " status " + status + " newHash " + newHash + " result " + users);
 	    if (users == undefined || users.length == 0) {
-	        logger.error('update.js-updatingHandler: Cannot find user with IP ' + req.ip);
+	        logger.error('update.js-updatingHandler: Update request not completed. Reason - Cannot find user with IP ' + req.ip);
 	        //console.log('Cannot find user with IP ' + req.ip);
 	        res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
 	        return;
@@ -31,7 +31,7 @@ function updateHandler(req, res){
 	    Pending.find({ 'transferID': parseFloat(tID), 'downloader': mac, 'uploader': uploaderMac }, { 'type': 1 }, function (error, relevantPending) {
 
 	        if (relevantPending == undefined || relevantPending.length == 0) {
-	            logger.error('Unable to find pending with given parameters');
+	            logger.error('Update request not completed. Reason - Cannot find pending to update. IP', req.ip);
 	            res.send({ 'status': 'Error', 'text': 'Unable to find pending' });
 	            return;
 	        }
@@ -46,7 +46,7 @@ function updateHandler(req, res){
 	            Pending.find({ 'transferID': tID }, { 'uploader': 1, 'fileHash': 1, 'type': 1, 'downloader': 1 }, function (error, requests) {
 
 	                Pending.remove({ "transferID": tID }, function (err, removed) {	// removes all pending transfer with id tID from pending 
-	                    logger.info("Update  type " + type + removed);
+	                    //logger.info("Update  type " + type + removed);
 	                    console.log(removed);
 
 	                    for (var i = 0; i < requests.length; i++) {
@@ -67,9 +67,15 @@ function updateHandler(req, res){
 	                    }
 	                    var downloader = requests[0].downloader;
 	                    if (type == 'direct')
-	                        logger.info('update.js-updateHandler: File transfer for direct leg completed, ' + downloader + ' has received file, made changes to pending')
+                            if(status == 'done')
+	                            logger.info('update.js-updateHandler: Update request completed. File transfer for direct, ' + downloader + ' has received file, made changes to pending')
+                            else
+                                logger.info('update.js-updateHandler: Update request completed. File transfer for direct, ' + downloader + ' has cancelled file, made changes to pending')
 	                    else
-	                        logger.info('update.js-updateHandler: File transfer for secondleg completed, ' + downloader + ' has received file, made changes to pending')
+                            if(status == 'done')
+	                            logger.info('update.js-updateHandler: Update request completed. File transfer for secondleg, ' + downloader + ' has received file, made changes to pending')
+                            else
+                                logger.info('update.js-updateHandler: Update request completed. File transfer for secondleg, ' + downloader + ' has cancelled file, made changes to pending')
 	                    res.send({ 'status': 'OK', 'text': 'Update Complete' });
 
 	                });
@@ -97,12 +103,12 @@ function updateHandler(req, res){
 	                    newPending.nick = request[0].nick;
 
 	                    newPending.save();
-	                    logger.info('update.js-updateHandler: firstleg completed, ' + nick + ' has received file, added secondleg transfer to pending')
+	                    //logger.info('update.js-updateHandler: Update request completed. File transfer for firstleg, ' + nick + ' has received file, added secondleg transfers to pending')
 	                    console.log(newPending);
 
 	                    Pending.remove({ "transferID": tID, 'downloader': mac, 'type': 'firstleg' }, function (err, removed) {
 	                        console.log(removed);
-	                        logger.info('update.js-updateHandler: pending for' + nick + ' removed')
+	                        logger.info('update.js-updateHandler: Update request completed. File transfer for firstleg, ' + nick + ' has received file, added secondleg transfers to pending')
 	                        res.send({ 'status': 'OK', 'text': 'Update Complete' });
 	                    });
 
@@ -112,7 +118,7 @@ function updateHandler(req, res){
 
 	                Pending.remove({ "transferID": tID, 'downloader': mac, 'type': 'firstleg' }, function (err, removed) {
 	                    console.log(removed);
-	                    logger.info('update.js-updateHandler: firstleg not completed, pending for' + nick + ' removed');
+	                    logger.info('update.js-updateHandler: Update request completed. File trasnsfer for firstleg, ' + mac + 'could not recieve file');
 	                    res.send({ 'status': 'OK', 'text': 'Update Complete' });
 	                });
 	            }
@@ -123,7 +129,7 @@ function updateHandler(req, res){
 
 	            Pending.remove({ "transferID": tID, 'downloader': mac, 'type': 'delete' }, function (err, removed) {
 	                console.log(removed);
-	                logger.info('update.js-updateHandler: firstleg completed, delete file hasrequested has been added to pending for friend' + nick);
+	                logger.info('update.js-updateHandler: Update request completed. ' + mac + ' has deleted file.');
 	                res.send({ 'status': 'OK', 'text': 'Update Complete' });
 	            });
 

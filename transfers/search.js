@@ -24,7 +24,7 @@ function searchHandler(req,res){
 		var result=[];
 		var userList=[];
         if (files == undefined ||files.length==0) {
-			logger.info("search.js-searchHandler: No file found for query " + pathname + " made by " + req.ip);
+			logger.info("search.js-searchHandler: Search results returned. Found 0 files for query " + pathname + ". IP " + req.ip);
 			res.send(result);
         }
 		else{
@@ -96,7 +96,7 @@ function searchHandler(req,res){
 				},
 				function(){
 					result.sort(function(a, b) {return b.score - a.score});
-					logger.info("found " + result.length + " results for query " + pathname + " made by " + req.ip);
+					logger.info("search.js-searchHandler: Search results returned. Found "+ results.length +" files for query " + pathname + " . IP " + req.ip);
 					res.send(result);
 				}
 			);
