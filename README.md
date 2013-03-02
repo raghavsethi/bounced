@@ -1,79 +1,73 @@
 Bounced
 =======
 
-Server for the Bounce file-sharing network
+Server for the Bounce file-sharing network. Client is [here](http://www.github.com/raghavsethi/bounce-client/)
 
-Development Environment
+Recommended Development Environment
 -----------------------
-1. Microsoft WebMatrix (http://www.microsoft.com/Web/webmatrix/node.aspx) (now works)
+1. [Microsoft WebMatrix](http://www.microsoft.com/Web/webmatrix/node.aspx)
 2. GitHub for Windows
-3. Node.js (install 32-bit node, that's the only one that works with WebMatrix)
-4. MongoDB (because it has Windows support as well) (set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) (reading about mongo: http://docs.mongodb.org/manual/)
-5. POSTman (to test the API) : https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm
+3. Node.js
+4. MongoDB
+(set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) (reading about mongo: http://docs.mongodb.org/manual/)
+5. [POSTman](https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm)
 
-Packages for Node:
-1. Express (tutorial: http://dailyjs.com/2010/11/08/node-tutorial-2/)
-2. Mongoose (for MongoDB) (http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/)
+Packages and tutorials
+----------------------
+
+Packages:
+1. Express ([tutorial](http://dailyjs.com/2010/11/08/node-tutorial-2/))
+2. Mongoose ([tutorial](http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/))
 
 Tutorials:
 1. Control flow: http://howtonode.org/control-flow
 2. Passing parameters to callbacks: http://stackoverflow.com/questions/939032/jquery-pass-more-parameters-into-callback
 3. Closures: http://web.archive.org/web/20080209105120/http://blog.morrisjohns.com/javascript_closures_for_dummies
 
-Architecture Ideas
+General Architecture
 ------------------
 
 ###Keeping track of online users
-This is tricky - we can explore keep-alive, and check if it is supported by the client. Otherwise, server may have to ping online clients round-robin to check state or vice versa.
+HTTP pings to /pending
 
 ###Authentication
-Major requirements: Anonymity for users, should ideally not be identifiable by IP. However with a packet-sniffing tool, this would be almost impossible to do, unless the server is involved in all transfers.
-Nicknames wouldn't work as primary keys, because you should be able to change nicks as often as you like. Initial thoughts are using a hash of (one or more) MAC address, or maybe just a mac address.
+MAC is the primary key, still not sure how to prevent spoofing of the HTTP post
 
 ###Server-initiated transfers, peer-initiated transfers
-Client will listen on a port.
+Every client will listen on a port for server commands
 
 ###Network protocol
 HTTP, as that is well-supported by Node and is easily debuggable in the browser and via Fiddler
 
 ###Data transfer
-JSON, no questions asked
+JSON.
 
 ###Encryption over the wire
-To prevent MITM and attempt to protect IP addresses of nicks from being revealed, HTTPS may be the way to go. We will have to see how to obtain a HTTPS certificate.
+HTTPS, yet to obtain certificate.
 
 ###Encryption on disk for friend-files
-Could use the hash of the file as the encryption key, this would make life very easy as the requesting peer only needs to know the hash - which is anyway the primary key for a file. However, it remains to be seen how the client which has the file will know which file to send.
-
-#### Scenario 1 - The file name is the hash.
-Doesn't seem to be possible, as it would technically be possible for the user to download other files off the network and see if the hashes match. This may be time-consuming and irrationally expensive, as the client will not tell you the hash in the UI, you will have to packet-sniff (which is not possible if we use HTTPS) or read the applications local storage. Of course, the applications local storage can be encrypted to prevnt this from happening
+Could use the hash of the file as the encryption key, this would make life very easy as the requesting peer only needs to know the hash - which is anyway the primary key for a file. To be implemented.
 
 ###Encryption for standard transfers
 Don't think this is worth the time and complexity, MITM can simply be prevented by using the comparing against the expected hash
 
 ###Local storage
-SQLite or XML. Probably secured or encrypted in some way
+Currently a config file, will move to VS-default config soon
 
 ###Distribution of network-specific configuration
-#####Complex way
-Run a common server that distributes list of IP addresses of server/failover server. Only makes sense if a concept of failover, load-sharing server exists. Then distribute the common-name of the server.
-#####Easy way
-Distribute a configuration file along with the installer, again, probably only makes sense if multiple servers exist
-#####Ridiculously easy way
-Hardcode the common server into the distributable
+Hardcode the common server into the distributable. Give server address on download web-page.
 
 ###Failover/Load sharing
 Will be implemented later.
 
 ###Update mechanism
-It is imperative that we find a way to update the client with minimum fuss. This is especially important as the client is likely to suffer from security issues, which may need to patched on a priority basis.
-Again, an easy way to do this is to force the user to update to the latest version (simply by providing a link) and exiting the application if it is not on the latest version.
+ClickOnce
 
-Requests and responses
-----------------------
-
+API
+---
+`
 ###GET /pending
-**Request Body** mac:XYZ (new! - will significantly cut down on processing)  
+**Request Body** None
 **Response Body** [{'uploader':XYZ, 'type':'indirect'...},] (apart from everything in pending - this must return IP of uploader as well) 
 **Client Action** Repeated every 'x' seconds  
 **Server Action** Reset the timeout at which the server will mark the user offline  
@@ -119,7 +113,7 @@ Requests and responses
 **Response Body** {'status': 'OK', 'text':'xyz'}  
 **Client Action** Client cancels or completes download
 **Server Action** Modify the pending queue appropriately  
-
+`
 Simple download protocol
 ------------------------
 
