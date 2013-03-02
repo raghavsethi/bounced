@@ -1,11 +1,20 @@
 Pending = require('../models').Pending;
 var winston = require('winston');
+var MongoDB = require('winston-mongodb')//.MongoDB;
+
 var logger = new (winston.Logger)({
     transports: [
       new (winston.transports.Console)(),
       new (winston.transports.File)({ filename: 'requests.log', json:false })
     ]
 });
+
+var researchLogger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)()
+    ]
+});
+researchLogger.add(winston.transports.MongoDB, { db: 'log', collection: 'log'});
 
 
 function updateHandler(req, res){
@@ -36,8 +45,13 @@ function updateHandler(req, res){
 	            return;
 	        }
 
-	        console.log(relevantPending);
 	        var type = relevantPending[0].type;
+
+	        var updateLog = {}
+	        if (type == 'secondleg')
+	            updateLog["friend"] = uploaderMac;
+
+	        var replications = 0;
 
 	        console.log(type);
 
@@ -53,6 +67,7 @@ function updateHandler(req, res){
 
 	                        if (requests[i].type == 'secondleg') { // adds entries to pending for deletion of replicated files.
 	                            var newPending = new Pending();
+	                            replications++;
 	                            newPending.fileHash = requests[i].fileHash;
 	                            newPending.downloader = requests[i].uploader;
 	                            newPending.uploader = "0000000000000000";
@@ -67,15 +82,31 @@ function updateHandler(req, res){
 	                    }
 	                    var downloader = requests[0].downloader;
 	                    if (type == 'direct')
-                            if(status == 'done')
+	                        if (status == 'done') {
+	                            updateLog["complete"] = true;
+	                            updateLog["replications"] = replications;
+	                            researchLogger.info(updateLog);
 	                            logger.info('update.js-updateHandler: Update request completed. File transfer for direct, ' + downloader + ' has received file, made changes to pending')
-                            else
-                                logger.info('update.js-updateHandler: Update request completed. File transfer for direct, ' + downloader + ' has cancelled file, made changes to pending')
+	                        }
+	                        else {
+	                            updateLog["complete"] = false;
+                                updateLog["replications"] = replications;
+	                            researchLogger.info(updateLog);
+	                            logger.info('update.js-updateHandler: Update request completed. File transfer for direct, ' + downloader + ' has cancelled file, made changes to pending')
+	                        }
 	                    else
-                            if(status == 'done')
+	                        if (status == 'done') {
+	                            updateLog["complete"] = true;
+                                updateLog["replications"] = replications;
+	                            researchLogger.info(updateLog);
 	                            logger.info('update.js-updateHandler: Update request completed. File transfer for secondleg, ' + downloader + ' has received file, made changes to pending')
-                            else
-                                logger.info('update.js-updateHandler: Update request completed. File transfer for secondleg, ' + downloader + ' has cancelled file, made changes to pending')
+	                        }
+	                        else {
+	                            updateLog["complete"] = false;
+                                updateLog["replications"] = replications;
+	                            researchLogger.info(updateLog);
+	                            logger.info('update.js-updateHandler: Update request completed. File transfer for secondleg, ' + downloader + ' has cancelled file, made changes to pending')
+	                        }
 	                    res.send({ 'status': 'OK', 'text': 'Update Complete' });
 
 	                });

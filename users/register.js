@@ -1,5 +1,6 @@
 ﻿var addToOnlineList = require('./online').addToOnlineList;
 var winston = require('winston');
+var MongoDB = require('winston-mongodb')//.MongoDB;
 
 
 var logger = new (winston.Logger)({
@@ -8,6 +9,14 @@ var logger = new (winston.Logger)({
       new (winston.transports.File)({ filename: 'requests.log', json:false })
     ]
 });
+
+var researchLogger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)()
+    ]
+});
+researchLogger.add(winston.transports.MongoDB, { db: 'log', collection: 'log'});
+
 
 function registerUserHandler(req, res) {
 
@@ -22,7 +31,7 @@ function registerUserHandler(req, res) {
         }
 
         if (req.body.nick.length === 0) {
-            logger.error('register.js-registerUserHandler: Unable to register. Reason - Invalid Userneme. IP'  + req.ip);
+            logger.error('register.js-registerUserHandler: Unable to register. Reason - Invalid Userneme. IP' + req.ip);
             res.send({ 'status': 'Error', 'text': "Invalid username" });
             return;
         }
@@ -32,7 +41,7 @@ function registerUserHandler(req, res) {
             if (users.length == 1 && users[0].mac === req.body.mac)
             { }
             else {
-                logger.error('register.js-registerUserHandler: Unable to register. Reason - Username ' + req.body.nick + '  already exists. IP'  + req.ip);
+                logger.error('register.js-registerUserHandler: Unable to register. Reason - Username ' + req.body.nick + '  already exists. IP' + req.ip);
                 res.send({ 'status': 'Error', 'text': 'This username is already registered' });
                 return;
             }
@@ -47,7 +56,7 @@ function registerUserHandler(req, res) {
             }
 
             if (users.length == 0) {
-                
+
                 var newuser = new User();
                 newuser.mac = req.body.mac;
                 newuser.dataDownloaded = 0;
@@ -74,6 +83,9 @@ function registerUserHandler(req, res) {
             //logger.info('register   Saved user ' + currentUser.nick);
 
             addToOnlineList(users[0].mac);
+            var registerLog = {}
+            registerLog["onlineMAC"]=users[0].mac;
+            researchLogger.info(registerLog);
 
             // Updating friend relationships asynchronously
             updateAllFriendships(currentUser);

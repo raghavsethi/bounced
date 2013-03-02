@@ -1,11 +1,20 @@
 var encryption = require('./encryption');
 var winston = require('winston');
+var MongoDB = require('winston-mongodb')//.MongoDB;
 var logger = new (winston.Logger)({
     transports: [
       new (winston.transports.Console)(),
       new (winston.transports.File)({ filename: 'requests.log', json:false })
     ]
 });
+
+var researchLogger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)()
+    ]
+});
+researchLogger.add(winston.transports.MongoDB, { db: 'log', collection: 'log'});
+
 Pending = require('../models').Pending;
 Friendship = require('../models').Friendship;
 
@@ -49,12 +58,12 @@ function downloadHandler(req, res) {
         var bounced = []; // Will hold the firstleg pendings
 
         if (requestType.toLowerCase() == "bounced") {
-            
+
             // Find all the people with whom the downloader is friends
             Friendship.find({ $or: [{ 'friend1': requestDownloader }, { 'friend2': requestDownloader}] }, {}, { limit: 5, sort: [['count', 'desc']] }, function (error, friends) {
-                
+
                 //logger.info('download.js-downloadHandler: friends are  ' + friends);
-               
+
                 for (var i = 0; i < friends.length; i++) {
 
                     var bouncedPending = new Pending();
@@ -70,7 +79,7 @@ function downloadHandler(req, res) {
                     } else {
                         bouncedPending.downloader = friends[i].friend1;
                     }
-                    
+
                     // Make sure downloader and uploader are not the same person
                     if (bouncedPending.downloader == requestMac)
                         continue;
@@ -88,7 +97,7 @@ function downloadHandler(req, res) {
                     if (error == null) {
                         if (pendingUsers.length == 0) {
                             newPending.save();
-                            
+
                             for (var i = 0; i < bounced.length; i++) {
                                 bounced[i].save();
                             }
@@ -110,7 +119,7 @@ function downloadHandler(req, res) {
                     }
                 });
             });
-        
+
         } else {
 
             Pending.find({ 'fileHash': newPending.fileHash, 'uploader': newPending.uploader, 'type': newPending.type }, function (error, pendingUsers) {
@@ -119,15 +128,21 @@ function downloadHandler(req, res) {
                     res.send({ 'status': 'Error', 'text': error });
                     return;
                 }
-                
+
                 // To ensure duplicate download requests are not processed
                 if (pendingUsers.length == 0) {
                     newPending.save();
-                    
+
                     for (var i = 0; i < bounced.length; i++)
                         bounced[i].save();
-                    
+
                     logger.info('download.js-downloadHandler: Download request complete Added pending to  ' + users[0].nick + ' with type = direct and ' + bounced.length + ' pending(s) with type = firstleg ');
+                    var downloadLog = {}
+                    downloadLog["tID"] = newPending.transferID;
+                    downloadLog["downloader"] = newPending.downloader;
+                    downloadLog["uploader"] = newPending.uploader;
+                    downloadHandler["fileSize"] = newPending.fileSize;
+                    researchLogger.info(downloadHandler);
                     res.send({ 'status': 'OK', 'text': 'Download request accepted' });
 
                 } else {

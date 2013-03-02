@@ -4,14 +4,17 @@ asyncFor=require('../transfers/search').asyncFor;
 //var MongoDB = require('winston-mongodb').MongoDB;
 
 var winston = require('winston');
+var MongoDB = require('winston-mongodb')//.MongoDB;
+
+//require('winston-mongo').Mongo;
 var updateLastPingTime = require('./online').updateLastPingTime;
 
 var logger = new (winston.Logger)({
     transports: [
-      new (winston.transports.Console)(),
-      new (winston.transports.File)({ filename: 'requests.log', json:false})
+      new (winston.transports.Console)()
     ]
 });
+ logger.add(winston.transports.MongoDB, { db: 'log', collection: 'log'});
 /*var databaseLogger = new (winston.Logger)({
     transports:[
         new (winston.transports.MongoDB)({ db: 'log'})
@@ -24,7 +27,7 @@ var pendingLogger = new (winston.Logger)({
     ]
 });
 
-
+    
 function pendingHandler(req, res) {
 
     User.find({ 'ip': req.ip }, function (error, users) {
@@ -34,7 +37,10 @@ function pendingHandler(req, res) {
             res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
             return;
         }
-
+        var x = {};
+        x["x"] = 1;
+        x["y"] = 2;
+        logger.info(x);
         var mac = users[0].mac;
         var nick = users[0].nick;
 
@@ -48,6 +54,7 @@ function pendingHandler(req, res) {
             var onlineUsers = [0];
             var onlineUserIPs = [0];
             var onlineUserNicks = [0];
+
 
             if (error) {
                 pendingLogger.error('pending.js-pendingHandler: Unable to retrieve pendings. Reason - Mongo error. IP' + req.ip);
@@ -93,7 +100,7 @@ function pendingHandler(req, res) {
                         //console.log('Pendings returned:');
                         //pendings[0].uploaderIP = "127.0.0.1";
                         pendingLogger.info('pending.js-pendingHandler: Retrieved Pendings. Number of pendings found - ' + pendings.length + '. Nick' + nick);
-                         //found ' + pendings.length + ' pendings for user ' + nick);
+                        //found ' + pendings.length + ' pendings for user ' + nick);
                         //console.log(pendings);
                         res.send(pendings);
                     }
