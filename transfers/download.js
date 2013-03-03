@@ -1,3 +1,4 @@
+//test comment
 var encryption = require('./encryption');
 var winston = require('winston');
 var MongoDB = require('winston-mongodb')//.MongoDB;
