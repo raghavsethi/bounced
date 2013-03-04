@@ -5,24 +5,24 @@ Server for the Bounce file-sharing network. Client is [here](http://www.github.c
 
 Recommended Development Environment
 -----------------------
-1. [Microsoft WebMatrix](http://www.microsoft.com/Web/webmatrix/node.aspx)
-2. GitHub for Windows
-3. Node.js
-4. MongoDB
-(set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) (reading about mongo: http://docs.mongodb.org/manual/)
-5. [POSTman](https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm)
+1. [Microsoft WebMatrix](http://www.microsoft.com/Web/webmatrix/node.aspx) 
+2. GitHub for Windows 
+3. Node.js 
+4. MongoDB ([set up](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) [manual](reading about mongo: http://docs.mongodb.org/manual/) 
+5. [POSTman](https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm) 
 
 Packages and tutorials
 ----------------------
 
 Packages:
-1. Express ([tutorial](http://dailyjs.com/2010/11/08/node-tutorial-2/))
-2. Mongoose ([tutorial](http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/))
+1. Express ([tutorial](http://dailyjs.com/2010/11/08/node-tutorial-2/)) 
+2. Mongoose ([tutorial](http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/)) 
+3. Winston ([tutorial](http://thechangelog.com/post/2844869169/winston-a-multi-transport-async-logging-library-for-node)) 
 
 Tutorials:
-1. Control flow: http://howtonode.org/control-flow
-2. Passing parameters to callbacks: http://stackoverflow.com/questions/939032/jquery-pass-more-parameters-into-callback
-3. Closures: http://web.archive.org/web/20080209105120/http://blog.morrisjohns.com/javascript_closures_for_dummies
+1. Control flow: http://howtonode.org/control-flow 
+2. Passing parameters to callbacks: http://stackoverflow.com/questions/939032/jquery-pass-more-parameters-into-callback 
+3. Closures: http://web.archive.org/web/20080209105120/http://blog.morrisjohns.com/javascript_closures_for_dummies 
 
 General Architecture
 ------------------
@@ -152,12 +152,3 @@ Use cases
 Current priorities
 ------------------
 * Logging - http://thechangelog.com/post/2844869169/winston-a-multi-transport-async-logging-library-for-node
-
-Cases for Update
-----------------
-
-			direct					firstleg				secondleg				delete
-
-done		delete all P + F		delete P, add new P 	delete all P + F		delete P
-
-canceled	delete all P + F		delete P				delete all P + F		
