@@ -17,7 +17,9 @@ Packages and tutorials
 Packages:
 1. Express ([tutorial](http://dailyjs.com/2010/11/08/node-tutorial-2/)) 
 2. Mongoose ([tutorial](http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/)) 
-3. Winston ([tutorial](http://thechangelog.com/post/2844869169/winston-a-multi-transport-async-logging-library-for-node)) 
+3. Winston ([tutorial](http://thechangelog.com/post/2844869169/winston-a-multi-transport-async-logging-library-for-node))
+4. Winston-MongoDB
+5. Forever ([source](https://github.com/nodejitsu/forever))
 
 Tutorials:
 1. Control flow: http://howtonode.org/control-flow 
@@ -60,7 +62,7 @@ Hardcode the common server into the distributable. Give server address on downlo
 ###Failover/Load sharing
 Will be implemented later.
 
-###Update mechanism
+###Update/Deployment mechanism
 ClickOnce
 
 API
@@ -118,7 +120,7 @@ Simple download protocol
 ------------------------
 
 ###Client initiates download
-1. User selects a file and selects 'download'
+1. User selects a file and selects 'download'/'bounce'
 2. Client makes request to /download with mac, hash, type
 3. If the file is 'online', the server creates 1 entry in the pending table from uploader to downloader. Otherwise, it will also create 'x' entries for the user's friends to download the file.
 
@@ -148,7 +150,3 @@ Use cases
 22. Hard drive space less-remove pendings.
 23. Requester recieves file while it is being replicated to other nodes as well
 24. Tranfer is corrupted for a bounced file - delete the file at the replicated node
-
-Current priorities
-------------------
-* Logging - http://thechangelog.com/post/2844869169/winston-a-multi-transport-async-logging-library-for-node
