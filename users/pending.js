@@ -33,18 +33,21 @@ function pendingHandler(req, res) {
     User.find({ 'ip': req.ip }, function (error, users) {
 
         if (users == undefined || users.length == 0) {
-            pendingLogger.info('pending.js-pendingHandler: Unable to retrieve pendings. Reason - Cannot find user with IP' + req.ip);
-            res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
+            pendingLogger.info('pending.js-pendingHandler: Unable to retrieve pendings. Reason - Cannot find user with IP ' + req.ip);
+            //res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
             return;
         }
-        var x = {};
-        x["x"] = 1;
-        x["y"] = 2;
-        logger.info(x);
+
         var mac = users[0].mac;
         var nick = users[0].nick;
 
-        updateLastPingTime(mac); // Update the time of the last ping for this user
+        var userInOnlineList = updateLastPingTime(mac); // Update the time of the last ping for this user
+
+        if(!userInOnlineList)
+        {
+            //res.send({ 'status': 'Error', 'text': 'IP not in online list ' + req.ip });
+            return;
+        }
 
         Pending.find({ 'downloader': mac }, function (error, results) {
 
@@ -57,10 +60,10 @@ function pendingHandler(req, res) {
 
 
             if (error) {
-                pendingLogger.error('pending.js-pendingHandler: Unable to retrieve pendings. Reason - Mongo error. IP' + req.ip);
+                pendingLogger.error('pending.js-pendingHandler: Unable to retrieve pendings. Reason - Mongo error. IP ' + req.ip);
             }
             if (results == undefined || results.length == 0) {
-                pendingLogger.info('pending.js-pendingHandler: Retrieved Pendings. Number of pendings found - 0. Nick' + nick);
+                pendingLogger.info('pending.js-pendingHandler: Retrieved Pendings. Number of pendings found - 0. Nick ' + nick);
                 res.send(pendings);
             }
             else {
@@ -99,7 +102,7 @@ function pendingHandler(req, res) {
                         }
                         //console.log('Pendings returned:');
                         //pendings[0].uploaderIP = "127.0.0.1";
-                        pendingLogger.info('pending.js-pendingHandler: Retrieved Pendings. Number of pendings found - ' + pendings.length + '. Nick' + nick);
+                        pendingLogger.info('pending.js-pendingHandler: Retrieved Pendings. Number of pendings found - ' + pendings.length + '. Nick ' + nick);
                         //found ' + pendings.length + ' pendings for user ' + nick);
                         //console.log(pendings);
                         res.send(pendings);
