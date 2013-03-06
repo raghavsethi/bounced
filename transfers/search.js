@@ -1,3 +1,4 @@
+// serach.js contains the searhcHandler which is called once a /search message is POSTed by the client
 var url = require("url");
 var winston = require('winston');
 File=require('../models').File;
@@ -9,17 +10,18 @@ var logger = new (winston.Logger)({
 });
 
 function searchHandler(req,res){
-	var pathname = req.params.query;
+	var pathname = req.params.query; // The search query bin the form of: "the+big+bang+theory" is recieved
 	pathname = pathname.toLowerCase();
 	var words = pathname.split('+');
 	var query = {};
 	query["$or"]=[];
 	score={};
+	// The array query contains the serach query words
 	for(var k=0; k<words.length;k++){
 		query["$or"].push({ 'keywords': words[k] });
 	}
-	console.log(query);
-	
+	console.log(query); //query is logged
+	// Searching for file with the given query
 	File.find(query, function (error, files) {
 		var result=[];
 		var userList=[];
@@ -33,18 +35,18 @@ function searchHandler(req,res){
 			for (var i=0;i<files.length;i++){
 				score=0;
 				var name = files[i].name.toLowerCase();
-				name = name.split(/[. -]/);
+				name = name.split(/[. -]/); // Creating array of the words in the file name
 				for(j=0;j<words.length;j++){
 					console.log(name);
 					for(var k in name){
 						console.log(name[k],words[j]);
 						if(name[k] == words[j]){
-								score+=1.1;
+								score+=1.1;  //Incase of a direct match of a word in the search query and the file name.
 								console.log(score);
 						}
 						else{
 							if(name[k].match('^'+words[j])==words[j]){
-								score+=1.05;
+								score+=1.05;  // Incase their is match in the leading charatcter sequences.Example: "earth is round".match('^'+"earth")=="earth" returns TRUE
 								console.log(score);
 							}
 							
@@ -53,7 +55,7 @@ function searchHandler(req,res){
 					}
 					var keywords = files[i].keywords;
 					for(var k in keywords){
-						console.log(keywords[k],words[j]);
+						console.log(keywords[k],words[j]); // Finally a simple keyword matching. Each file is associated with a set of keywords.
 						if(keywords[k] == words[j]){
 								score+=1.0;
 								console.log(score);
@@ -62,10 +64,12 @@ function searchHandler(req,res){
 					
 					}
 				}
-				files[i].score = score;
+				files[i].score = score; //Score stored in the files object
 			}
 			files.sort(function(a, b) {return b.score - a.score});
 			results=[]
+			// Using an asyncronous for to find the list of online users who have the query matching files
+			// and then sending the file objects in descending order of score.
 			asyncFor(files.length, function(loop) {  
 				var i=loop.iteration();
 				userList=files[i].users;
