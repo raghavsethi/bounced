@@ -41,12 +41,15 @@ function searchHandler(req,res){
 					for(var k in name){
 						console.log(name[k],words[j]);
 						if(name[k] == words[j]){
-								score+=1.1;  //Incase of a direct match of a word in the search query and the file name.
+								score+=1.1;  //Incase of a direct match of a word in 
+											 //the search query and the file name.
 								console.log(score);
 						}
 						else{
 							if(name[k].match('^'+words[j])==words[j]){
-								score+=1.05;  // Incase their is match in the leading charatcter sequences.Example: "earth is round".match('^'+"earth")=="earth" returns TRUE
+								score+=1.05;  // Incase their is match in the leading 
+											  //charatcter sequences.Example: 
+											  //"earth is round".match('^'+"earth")=="earth" returns TRUE
 								console.log(score);
 							}
 							
