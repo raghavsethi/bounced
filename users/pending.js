@@ -45,6 +45,7 @@ function pendingHandler(req, res) {
 
         if(!userInOnlineList)
         {
+            pendingLogger.info('pending.js-pendingHandler: Returned null. Reason - User not in online list. IP ' + req.ip);
             //res.send({ 'status': 'Error', 'text': 'IP not in online list ' + req.ip });
             return;
         }
@@ -63,7 +64,7 @@ function pendingHandler(req, res) {
                 pendingLogger.error('pending.js-pendingHandler: Unable to retrieve pendings. Reason - Mongo error. IP ' + req.ip);
             }
             if (results == undefined || results.length == 0) {
-                pendingLogger.info('pending.js-pendingHandler: Retrieved Pendings. Number of pendings found - 0. Nick ' + nick);
+                pendingLogger.info('pending.js-pendingHandler: 0 pendings found. Nick: ' + nick);
                 res.send(pendings);
             }
             else {
@@ -102,7 +103,7 @@ function pendingHandler(req, res) {
                         }
                         //console.log('Pendings returned:');
                         //pendings[0].uploaderIP = "127.0.0.1";
-                        pendingLogger.info('pending.js-pendingHandler: Retrieved Pendings. Number of pendings found - ' + pendings.length + '. Nick ' + nick);
+                        pendingLogger.info('pending.js-pendingHandler: '+ pendings.length + ' pendings found. Nick: ' + nick);
                         //found ' + pendings.length + ' pendings for user ' + nick);
                         //console.log(pendings);
                         res.send(pendings);

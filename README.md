@@ -14,14 +14,14 @@ Recommended Development Environment
 Packages and tutorials
 ----------------------
 
-Packages:
+Packages: 
 1. Express ([tutorial](http://dailyjs.com/2010/11/08/node-tutorial-2/)) 
 2. Mongoose ([tutorial](http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/)) 
 3. Winston ([tutorial](http://thechangelog.com/post/2844869169/winston-a-multi-transport-async-logging-library-for-node))
-4. Winston-MongoDB
-5. Forever ([source](https://github.com/nodejitsu/forever))
+4. Winston-MongoDB 
+5. Forever ([source](https://github.com/nodejitsu/forever)) 
 
-Tutorials:
+Tutorials: 
 1. Control flow: http://howtonode.org/control-flow 
 2. Passing parameters to callbacks: http://stackoverflow.com/questions/939032/jquery-pass-more-parameters-into-callback 
 3. Closures: http://web.archive.org/web/20080209105120/http://blog.morrisjohns.com/javascript_closures_for_dummies 
@@ -68,53 +68,53 @@ ClickOnce
 API
 ---
 
-###GET /pending
-**Request Body** None
+###GET /pending 
+**Request Body** None 
 **Response Body** `[{'uploader':XYZ, 'type':'indirect'...},]` (apart from everything in pending - this must return IP of uploader as well) 
-**Client Action** Repeated every 'x' seconds  
-**Server Action** Reset the timeout at which the server will mark the user offline  
+**Client Action** Repeated every 'x' seconds 
+**Server Action** Reset the timeout at which the server will mark the user offline   
 
-###GET /search/the+big+bang+theory
+###GET /search/the+big+bang+theory 
 **Request Body** None  
 **Response Body** `[{'uploader':XYZ, 'mac':'XYZ', 'type':'online', 'hash':XYZ, 'size':1234, ...},]`
 **Client Action** When user searches for a file  
-**Server Action** Return list of matching files
+**Server Action** Return list of matching files 
 
-###GET /key/transferID
+###GET /key/transferID 
 **Request Body** None  
-**Response Body** `{'key':XYZ} `
-**Client Action** When a client recieves a request to serve a file
-**Server Action** Return the key for a transferID
+**Response Body** `{'key':XYZ} ` 
+**Client Action** When a client recieves a request to serve a file 
+**Server Action** Return the key for a transferID 
 
-###GET /status
+###GET /status 
 **Request Body** None  
-**Response Body** `[{'transferId':XYZ, 'hash':XYZ, 'mac': XYZ, 'sent': 2, 'total': 5},]`
-**Client Action** Every x seconds, display on the 'bounces' tab
-**Server Action** Compute which transferIDs have what status
+**Response Body** `[{'transferId':XYZ, 'hash':XYZ, 'mac': XYZ, 'sent': 2, 'total': 5},]` 
+**Client Action** Every x seconds, display on the 'bounces' tab 
+**Server Action** Compute which transferIDs have what status 
 
-###POST /register
-**Request Body** `mac=XYZ, nick=XYZ, space_allocated=265348`
-**Response Body** `{'status': 'OK', 'text':'xyz'}`
-**Client Action** Application start  
-**Server Action** Mark user as online and start the timeout  
-
-###POST /download
-**Request Body** `hash=XYZ, mac=XYZ, type=online`
+###POST /register 
+**Request Body** `mac=XYZ, nick=XYZ, space_allocated=265348` 
 **Response Body** `{'status': 'OK', 'text':'xyz'}` 
-**Client Action** User click on 'download' or 'bounce' button  
-**Server Action** Populate the pending queue appropriately  
+**Client Action** Application start  
+**Server Action** Mark user as online and start the timeout 
 
-###POST /sync
-**Request Body** `added=[{'name':'file1'...}]`
-**Response Body** `{'status': 'OK', 'text':'xyz'}`
-**Client Action** Client finishes calculating diffs  
+###POST /download 
+**Request Body** `hash=XYZ, mac=XYZ, type=online` 
+**Response Body** `{'status': 'OK', 'text':'xyz'}`  
+**Client Action** User click on 'download' or 'bounce' button 
+**Server Action** Populate the pending queue appropriately 
+
+###POST /sync 
+**Request Body** `added=[{'name':'file1'...}]` 
+**Response Body** `{'status': 'OK', 'text':'xyz'}` 
+**Client Action** Client finishes calculating diffs   
 **Server Action** Make appropriate changes to file table  
 
-###POST /update
-**Request Body** `transferID=XYZ, status=canceled/done/hash_mismatch, [newHash=XYZ], [uploader=XYZ]`
-**Response Body** `{'status': 'OK', 'text':'xyz'}`
-**Client Action** Client cancels or completes download
-**Server Action** Modify the pending queue appropriately  
+###POST /update 
+**Request Body** `transferID=XYZ, status=canceled/done/hash_mismatch, [newHash=XYZ], [uploader=XYZ]` 
+**Response Body** `{'status': 'OK', 'text':'xyz'}` 
+**Client Action** Client cancels or completes download 
+**Server Action** Modify the pending queue appropriately 
 
 Simple download protocol
 ------------------------
