@@ -1,17 +1,22 @@
 File=require('../models').File;
-
+var winston = require('winston');
 totalRemoved = 0; //Used to synchronise addition to be after removal
 addedData = {}
+
+var syncLogger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)(),
+      new (winston.transports.File)({ filename: 'sync.log', json:false})
+    ]
+});
 
 function syncHandler(req, res, onlineUsers) {
     totalRemoved = 0;
     addedData = JSON.parse(req.body.added);
     var removedData = JSON.parse(req.body.removed);
+    var addedItems = [];
+    var removedItems = [];
     
-    console.log("Additions\n---------");
-    console.log(addedData);
-    console.log("Removals\n--------");
-    console.log(removedData);
 
     User.find({ 'ip': req.ip }, function (error, users) {
 
@@ -23,6 +28,7 @@ function syncHandler(req, res, onlineUsers) {
 
         var totalRemoved = 0;
         for (var key in removedData)
+            syncLogger.info(removedData[key].name);
             totalRemoved = totalRemoved++;
 
         if (totalRemoved == 0) {
@@ -30,9 +36,12 @@ function syncHandler(req, res, onlineUsers) {
 
             for (var key in addedData) {
                 if (addedData.hasOwnProperty(key)) {
+                    addedItems.push(addedData[key].name);
                     addFile(addedData[key], users[0]);
                 }
             }
+            syncLogger.info("Additions for " + req.ip + " " + addedItems);
+            syncLogger.info("Removals for " + req.ip + " " + removedItems);
 
             res.send({ 'status': 'OK', 'text': 'Sync successful' });
 
@@ -41,10 +50,17 @@ function syncHandler(req, res, onlineUsers) {
 
         for (var key in removedData) {
             if (removedData.hasOwnProperty(key)) {
+                removedItems.push(removedData[key].name);
                 removeFile(removedData[key], users[0], totalRemoved);
             }
         }
 
+        //pendingLogger.info(addedItems);
+
+        syncLogger.info("Additions for " + req.ip + "\n---------");
+        syncLogger.info(addedItems);
+        syncLogger.info("Removals for " + req.ip + "\n--------");
+        syncLogger.info(removedItems);
         res.send({ 'status': 'OK', 'text': 'Sync successful' });
     });
 }

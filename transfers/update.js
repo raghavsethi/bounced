@@ -83,12 +83,16 @@ function updateHandler(req, res){
 	                    var downloader = requests[0].downloader;
 	                    if (type == 'direct')
 	                        if (status == 'done') {
+	                        	updateLog["type"] = "update";
+	                        	updateLog["transferID"] = tID;
 	                            updateLog["complete"] = true;
 	                            updateLog["replications"] = replications;
 	                            researchLogger.info(updateLog);
 	                            logger.info('update.js-updateHandler: Update request completed. File transfer for direct, ' + downloader + ' has received file, made changes to pending')
 	                        }
 	                        else {
+	                        	updateLog["type"] = "update";
+	                        	updateLog["transferID"] = tID;
 	                            updateLog["complete"] = false;
                                 updateLog["replications"] = replications;
 	                            researchLogger.info(updateLog);
@@ -96,17 +100,21 @@ function updateHandler(req, res){
 	                        }
 	                    else
 	                        if (status == 'done') {
+	                        	updateLog["type"] = "update";
+	                        	updateLog["transferID"] = tID;
 	                            updateLog["complete"] = true;
                                 updateLog["replications"] = replications;
 	                            researchLogger.info(updateLog);
 	                            logger.info('update.js-updateHandler: Update request completed. File transfer for secondleg, ' + downloader + ' has received file, made changes to pending')
 	                        }
-	                        else {
+	                        /*else {
+	                        	updateLog["type"] = "Update";
+	                        	updateLog["transferID"] = tID;
 	                            updateLog["complete"] = false;
                                 updateLog["replications"] = replications;
 	                            researchLogger.info(updateLog);
 	                            logger.info('update.js-updateHandler: Update request completed. File transfer for secondleg, ' + downloader + ' has cancelled file, made changes to pending')
-	                        }
+	                        }*/
 	                    res.send({ 'status': 'OK', 'text': 'Update Complete' });
 
 	                });
@@ -120,6 +128,11 @@ function updateHandler(req, res){
 	            if (status == 'done') {
 
 	                Pending.find({ 'transferID': tID, 'type': 'direct' }, function (error, request) {
+	                	if(error || request.length == 0){
+	                		res.send({ 'status': 'OK', 'text': 'Update Complete' });
+	                		return;
+	                	}
+
 	                    var newPending = new Pending();
 	                    newPending.fileHash = newHash;
 	                    newPending.downloader = request[0].downloader;

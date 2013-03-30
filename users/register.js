@@ -31,7 +31,7 @@ function registerUserHandler(req, res) {
         }
 
         if (req.body.nick.length === 0) {
-            logger.error('register.js-registerUserHandler: Unable to register. Reason - Invalid Userneme. IP' + req.ip);
+            logger.error('register.js-registerUserHandler: Unable to register. Reason - Invalid Username. IP' + req.ip);
             res.send({ 'status': 'Error', 'text': "Invalid username" });
             return;
         }
@@ -84,13 +84,25 @@ function registerUserHandler(req, res) {
 
             addToOnlineList(users[0].mac);
             var registerLog = {}
-            registerLog["onlineMAC"]=users[0].mac;
+            registerLog["type"] = "online";
+            registerLog["onlineMAC"] = users[0].mac;
             researchLogger.info(registerLog);
 
             // Updating friend relationships asynchronously
             updateAllFriendships(currentUser);
 
             logger.info('register.js-registerUserHandler: User Registered with IP ' + req.ip + ', MAC ' + currentUser.mac + ' and nick ' + currentUser.nick);
+
+            User.find({'ip':req.ip,'mac':{$ne:req.body.mac}}, function (error, duplicateIP){
+                if (!error){
+                    for (var i = 0; i <duplicateIP.length; i++) {
+                        duplicateIP[i].ip='0';
+                        logger.info('register.js-registerUserHandler: duplicateIP ' + req.ip + '. User with MAC ' + duplicateIP[i].mac + ' has IP set to 0');
+                        duplicateIP[i].save();
+                    };
+                }
+
+            });
 
             res.send({ 'status': 'OK', 'text': 'Logged in successfully' });
         });

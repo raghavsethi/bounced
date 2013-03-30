@@ -5,26 +5,24 @@ Server for the Bounce file-sharing network. Client is [here](http://www.github.c
 
 Recommended Development Environment
 -----------------------
-1. [Microsoft WebMatrix](http://www.microsoft.com/Web/webmatrix/node.aspx) 
-2. GitHub for Windows 
-3. Node.js 
-4. MongoDB ([set up](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) [manual](reading about mongo: http://docs.mongodb.org/manual/) 
-5. [POSTman](https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm) 
+1. [Microsoft WebMatrix](http://www.microsoft.com/Web/webmatrix/node.aspx)
+2. GitHub for Windows
+3. Node.js
+4. MongoDB
+(set up: http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) (reading about mongo: http://docs.mongodb.org/manual/)
+5. [POSTman](https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm)
 
 Packages and tutorials
 ----------------------
 
-Packages: 
-1. Express ([tutorial](http://dailyjs.com/2010/11/08/node-tutorial-2/)) 
-2. Mongoose ([tutorial](http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/)) 
-3. Winston ([tutorial](http://thechangelog.com/post/2844869169/winston-a-multi-transport-async-logging-library-for-node))
-4. Winston-MongoDB 
-5. Forever ([source](https://github.com/nodejitsu/forever)) 
+Packages:
+1. Express ([tutorial](http://dailyjs.com/2010/11/08/node-tutorial-2/))
+2. Mongoose ([tutorial](http://www.bloggedbychris.com/2012/06/20/windows-7-restful-web-service-node-js-express-mongodb/))
 
-Tutorials: 
-1. Control flow: http://howtonode.org/control-flow 
-2. Passing parameters to callbacks: http://stackoverflow.com/questions/939032/jquery-pass-more-parameters-into-callback 
-3. Closures: http://web.archive.org/web/20080209105120/http://blog.morrisjohns.com/javascript_closures_for_dummies 
+Tutorials:
+1. Control flow: http://howtonode.org/control-flow
+2. Passing parameters to callbacks: http://stackoverflow.com/questions/939032/jquery-pass-more-parameters-into-callback
+3. Closures: http://web.archive.org/web/20080209105120/http://blog.morrisjohns.com/javascript_closures_for_dummies
 
 General Architecture
 ------------------
@@ -62,65 +60,65 @@ Hardcode the common server into the distributable. Give server address on downlo
 ###Failover/Load sharing
 Will be implemented later.
 
-###Update/Deployment mechanism
+###Update mechanism
 ClickOnce
 
 API
 ---
 
-###GET /pending 
-**Request Body** None 
+###GET /pending
+**Request Body** None
 **Response Body** `[{'uploader':XYZ, 'type':'indirect'...},]` (apart from everything in pending - this must return IP of uploader as well) 
-**Client Action** Repeated every 'x' seconds 
-**Server Action** Reset the timeout at which the server will mark the user offline   
+**Client Action** Repeated every 'x' seconds  
+**Server Action** Reset the timeout at which the server will mark the user offline  
 
-###GET /search/the+big+bang+theory 
+###GET /search/the+big+bang+theory
 **Request Body** None  
 **Response Body** `[{'uploader':XYZ, 'mac':'XYZ', 'type':'online', 'hash':XYZ, 'size':1234, ...},]`
 **Client Action** When user searches for a file  
-**Server Action** Return list of matching files 
+**Server Action** Return list of matching files
 
-###GET /key/transferID 
+###GET /key/transferID
 **Request Body** None  
-**Response Body** `{'key':XYZ} ` 
-**Client Action** When a client recieves a request to serve a file 
-**Server Action** Return the key for a transferID 
+**Response Body** `{'key':XYZ} `
+**Client Action** When a client recieves a request to serve a file
+**Server Action** Return the key for a transferID
 
-###GET /status 
+###GET /status
 **Request Body** None  
-**Response Body** `[{'transferId':XYZ, 'hash':XYZ, 'mac': XYZ, 'sent': 2, 'total': 5},]` 
-**Client Action** Every x seconds, display on the 'bounces' tab 
-**Server Action** Compute which transferIDs have what status 
+**Response Body** `[{'transferId':XYZ, 'hash':XYZ, 'mac': XYZ, 'sent': 2, 'total': 5},]`
+**Client Action** Every x seconds, display on the 'bounces' tab
+**Server Action** Compute which transferIDs have what status
 
-###POST /register 
-**Request Body** `mac=XYZ, nick=XYZ, space_allocated=265348` 
-**Response Body** `{'status': 'OK', 'text':'xyz'}` 
+###POST /register
+**Request Body** `mac=XYZ, nick=XYZ, space_allocated=265348`
+**Response Body** `{'status': 'OK', 'text':'xyz'}`
 **Client Action** Application start  
-**Server Action** Mark user as online and start the timeout 
+**Server Action** Mark user as online and start the timeout  
 
-###POST /download 
-**Request Body** `hash=XYZ, mac=XYZ, type=online` 
-**Response Body** `{'status': 'OK', 'text':'xyz'}`  
-**Client Action** User click on 'download' or 'bounce' button 
-**Server Action** Populate the pending queue appropriately 
-
-###POST /sync 
-**Request Body** `added=[{'name':'file1'...}]` 
+###POST /download
+**Request Body** `hash=XYZ, mac=XYZ, type=online`
 **Response Body** `{'status': 'OK', 'text':'xyz'}` 
-**Client Action** Client finishes calculating diffs   
+**Client Action** User click on 'download' or 'bounce' button  
+**Server Action** Populate the pending queue appropriately  
+
+###POST /sync
+**Request Body** `added=[{'name':'file1'...}]`
+**Response Body** `{'status': 'OK', 'text':'xyz'}`
+**Client Action** Client finishes calculating diffs  
 **Server Action** Make appropriate changes to file table  
 
-###POST /update 
-**Request Body** `transferID=XYZ, status=canceled/done/hash_mismatch, [newHash=XYZ], [uploader=XYZ]` 
-**Response Body** `{'status': 'OK', 'text':'xyz'}` 
-**Client Action** Client cancels or completes download 
-**Server Action** Modify the pending queue appropriately 
+###POST /update
+**Request Body** `transferID=XYZ, status=canceled/done/hash_mismatch, [newHash=XYZ], [uploader=XYZ]`
+**Response Body** `{'status': 'OK', 'text':'xyz'}`
+**Client Action** Client cancels or completes download
+**Server Action** Modify the pending queue appropriately  
 
 Simple download protocol
 ------------------------
 
 ###Client initiates download
-1. User selects a file and selects 'download'/'bounce'
+1. User selects a file and selects 'download'
 2. Client makes request to /download with mac, hash, type
 3. If the file is 'online', the server creates 1 entry in the pending table from uploader to downloader. Otherwise, it will also create 'x' entries for the user's friends to download the file.
 
@@ -150,3 +148,16 @@ Use cases
 22. Hard drive space less-remove pendings.
 23. Requester recieves file while it is being replicated to other nodes as well
 24. Tranfer is corrupted for a bounced file - delete the file at the replicated node
+
+Current priorities
+------------------
+* Logging - http://thechangelog.com/post/2844869169/winston-a-multi-transport-async-logging-library-for-node
+
+Cases for Update
+----------------
+
+			direct					firstleg				secondleg				delete
+
+done		delete all P + F		delete P, add new P 	delete all P + F		delete P
+
+canceled	delete all P + F		delete P				delete all P + F		

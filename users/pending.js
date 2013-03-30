@@ -4,6 +4,7 @@ asyncFor=require('../transfers/search').asyncFor;
 //var MongoDB = require('winston-mongodb').MongoDB;
 
 var winston = require('winston');
+//var supervisor = require('supervisor');
 var MongoDB = require('winston-mongodb')//.MongoDB;
 
 //require('winston-mongo').Mongo;
@@ -108,7 +109,7 @@ function pendingHandler(req, res) {
                         //console.log(pendings);
                         res.send(pendings);
                     }
-				);
+                );
 
 
                 });
@@ -121,11 +122,11 @@ function pendingHandler(req, res) {
 
 function checkIn(arr, val){
 
-	for(var i=0;i<arr.length;i++){
-		if(arr[i]==val)
-			return true;
-	}
-	return false;
+    for(var i=0;i<arr.length;i++){
+        if(arr[i]==val)
+            return true;
+    }
+    return false;
 
 }
 
