@@ -55,6 +55,40 @@ function updateHandler(req, res){
 
 	        console.log(type);
 
+			if (type == 'missing') {
+	            var missingFile = res.fileHash;
+	            var missingUser = mac;
+
+                File.find({ 'hash': missingFile }, function (error, files) {
+                    if (files == undefined || files.length == 0) {
+	                    logger.error('update.js-updateHandler: Missing - File with hash ', missingFile, ' could not be found' );
+	                    res.send({ 'status': 'OK', 'text': 'Missing Update complete' });
+	                    return;
+	                }
+
+                    if (files[0].users.length == 1) {
+                        files[0].remove();
+                         logger.info('update.js-updateHandler: Missing - Removed File with hash ', missingFile, '.' );
+                    }
+
+                    var file = files[0];
+
+                    for (i = 0; i < file.users.length; i++) {
+                        if (file.users[i] === missingUser) {
+                            file.users.splice(i, 1);
+                            file.save();
+                            logger.info('update.js-updateHandler: Missing - Removed user with mac ', missingUser, ' from file with hash ', missingFile, '.' );
+                            break;
+                        }
+                    }
+
+	                
+	                res.send({ 'status': 'OK', 'text': 'Missing Update complete' });
+
+	            });
+
+	        }
+			
 	        if (type == 'direct' || type == 'secondleg') {
 
 	            Pending.find({ 'transferID': tID }, { 'uploader': 1, 'fileHash': 1, 'type': 1, 'downloader': 1 }, function (error, requests) {
