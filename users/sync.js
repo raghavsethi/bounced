@@ -16,23 +16,26 @@ function syncHandler(req, res, onlineUsers) {
     var removedData = JSON.parse(req.body.removed);
     var addedItems = [];
     var removedItems = [];
-    
+
+    syncLogger.error("sync.js-syncHandler: Removeddata " , removedData);
 
     User.find({ 'ip': req.ip }, function (error, users) {
 
         if (users == undefined || users.length == 0) {
-            console.log('Cannot find user with IP ' + req.ip);
+            syncLogger.error("sync.js-syncHandler: Cannot find user with IP " , req.ip);
             res.send({ 'status': 'Error', 'text': 'Cannot find user with IP ' + req.ip });
             return;
         }
 
         var totalRemoved = 0;
         for (var key in removedData)
-            syncLogger.info(removedData[key].name);
-            totalRemoved = totalRemoved++;
+        {
+            syncLogger.info("sync.js-syncHandler: Got request to remove " , removedData[key].name);
+            totalRemoved = totalRemoved + 1;
+        }
 
         if (totalRemoved == 0) {
-            console.log("0 files removed. Adding new files only.");
+            syncLogger.info("sync.js-syncHandler: 0 files to be removed. Adding new files only.");
 
             for (var key in addedData) {
                 if (addedData.hasOwnProperty(key)) {
@@ -40,9 +43,7 @@ function syncHandler(req, res, onlineUsers) {
                     addFile(addedData[key], users[0]);
                 }
             }
-            syncLogger.info("Additions for " + req.ip + " " + addedItems);
-            syncLogger.info("Removals for " + req.ip + " " + removedItems);
-
+            syncLogger.info("sync.js-syncHandler: Additions for " , req.ip , " " , addedItems);
             res.send({ 'status': 'OK', 'text': 'Sync successful' });
 
             return;
@@ -57,10 +58,8 @@ function syncHandler(req, res, onlineUsers) {
 
         //pendingLogger.info(addedItems);
 
-        syncLogger.info("Additions for " + req.ip + "\n---------");
-        syncLogger.info(addedItems);
-        syncLogger.info("Removals for " + req.ip + "\n--------");
-        syncLogger.info(removedItems);
+        syncLogger.info("sync.js-syncHandler: Additions for " , req.ip , " ", addedItems);
+        syncLogger.info("sync.js-syncHandler: Removals for " , req.ip , " ", removedItems);
         res.send({ 'status': 'OK', 'text': 'Sync successful' });
     });
 }
@@ -69,13 +68,13 @@ function removeFile(fileInfo, user, totalRemoved) {
     File.find({ 'hash': fileInfo.hash }, function (error, files) {
 
         if (files.length == 0) {
-            console.log("File not found in DB : " + fileInfo.name);
+            syncLogger.error("sync.js-removeFile: File not found in DB : " , fileInfo.name);
             return;
         }
 
         if (files[0].users.length == 1) {
-            files[0].remove();
-            console.log("Removed file from DB : " + fileInfo.name);
+            File.find({ 'hash': fileInfo.hash }).remove();
+            syncLogger.info("sync.js-removeFile: Removed file from DB : " , fileInfo.name);
         }
 
         var file = files[0];
@@ -84,7 +83,7 @@ function removeFile(fileInfo, user, totalRemoved) {
             if (file.users[i] === user.mac) {
                 file.users.splice(i, 1);
                 file.save();
-                console.log("Removed user from file : " + fileInfo.name);
+                syncLogger.info("sync.js-removeFile: Removed user from file : " , fileInfo.name);
                 break;
             }
         }
@@ -97,7 +96,7 @@ function removeFile(fileInfo, user, totalRemoved) {
 
             for (var key in addedData) {
                 if (addedData.hasOwnProperty(key)) {
-                    addFile(addedData[key], users[0]);
+                    addFile(addedData[key], user);
                 }
             }
         }
@@ -110,7 +109,7 @@ function addFile(fileInfo, user) {
         
         // New file
         if(files.length==0) {
-            console.log("Adding file : " + fileInfo.name);
+            syncLogger.info("sync.js-addFile: Adding file : " , fileInfo.name);
             
             var newFile = new File();
             newFile.hash = fileInfo.hash;
@@ -126,7 +125,7 @@ function addFile(fileInfo, user) {
 
         var file = files[0];
         
-        console.log("Updating file: " + fileInfo.name);
+        syncLogger.info("sync.js-addFile: Updating file: " , fileInfo.name);
 
         if(file.users.indexOf(user.mac)==-1) {
             file.users.push(user.mac);
